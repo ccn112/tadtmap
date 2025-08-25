@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TADT Map - Quản lý thửa đất</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>TADT Map - Quản lý thửa đất</h1>
+            <div class="header-controls">
+                <button id="importBtn" class="btn btn-primary">Import DXF/GeoJSON</button>
+                <button id="loginBtn" class="btn btn-secondary">Đăng nhập</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <button id="sidebarToggleBtn" class="sidebar-toggle">▼</button>
+                <div class="sidebar-header">
+                    <h3>Danh sách thửa đất</h3>
+                    <button id="toggleFiltersBtn" class="toggle-filters-btn">
+                        <span class="toggle-icon">▼</span> Ẩn/Hiện bộ lọc
+                    </button>
+                    <div class="filter-controls" id="filterControls">
+                        <select id="projectFilter" class="filter-select">
+                            <option value="">Tất cả dự án</option>
+                        </select>
+                        <select id="personInChargeFilter" class="filter-select">
+                            <option value="">Tất cả người phụ trách</option>
+                        </select>
+                        <select id="legalStatusFilter" class="filter-select">
+                            <option value="">Tất cả tình trạng pháp lý</option>
+                            <option value="Chưa có">Chưa có</option>
+                            <option value="Đang xin">Đang xin</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                        <select id="clearanceStatusFilter" class="filter-select">
+                            <option value="">Tất cả tình trạng GPMB</option>
+                            <option value="Chưa GP">Chưa GP</option>
+                            <option value="Đang GP">Đang GP</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="parcels-list" id="parcelsList">
+                    <!-- Danh sách thửa đất sẽ được load từ JavaScript -->
+                </div>
+            </aside>
+
+            <!-- Map Container -->
+            <main class="map-container">
+                <div id="map"></div>
+                
+                <!-- Drawing Controls -->
+                <div class="drawing-controls">
+                    <button id="drawPolygonBtn" class="btn btn-info">Vẽ polygon</button>
+                    <button id="editBtn" class="btn btn-warning">Sửa</button>
+                    <button id="deleteBtn" class="btn btn-danger">Xóa</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="parcelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Thêm thửa đất mới</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="parcelForm">
+                    <input type="hidden" id="parcelId">
+                    
+                    <div class="form-group">
+                        <label for="title">Tiêu đề *</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="area">Diện tích (m²)</label>
+                        <input type="number" id="area" name="area" step="0.01" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="personInCharge">Người phụ trách</label>
+                        <input type="text" id="personInCharge" name="personInCharge">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="legalStatus">Tình trạng pháp lý</label>
+                        <select id="legalStatus" name="legalStatus">
+                            <option value="Chưa có">Chưa có</option>
+                            <option value="Đang xin">Đang xin</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clearanceStatus">Tình trạng GPMB</label>
+                        <select id="clearanceStatus" name="clearanceStatus">
+                            <option value="Chưa GP">Chưa GP</option>
+                            <option value="Đang GP">Đang GP</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="parcelColor">Màu sắc thửa đất</label>
+                        <div class="color-picker-container">
+                            <input type="color" id="parcelColor" name="parcelColor" value="#3388ff">
+                            <div class="color-preview" id="colorPreview"></div>
+                            <span class="color-value" id="colorValue">#3388ff</span>
+                        </div>
+                        <small>Chọn màu để hiển thị trên bản đồ</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="attachment">File đính kèm</label>
+                        <input type="file" id="attachment" name="attachment" multiple>
+                        <div id="currentAttachment" class="current-file"></div>
+                        <small>Chọn một hoặc nhiều file để đính kèm</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import sơ đồ mặt bằng</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="importForm">
+                    <div class="form-group">
+                        <label for="importFile">Chọn file DXF hoặc GeoJSON</label>
+                        <input type="file" id="importFile" name="importFile" accept=".dxf,.geojson,.json" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="importTitle">Tiêu đề chung cho các thửa đất</label>
+                        <input type="text" id="importTitle" name="importTitle" placeholder="VD: Khu vực A" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Import</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeImportModal()">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đăng nhập</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" name="loginEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Mật khẩu</label>
+                        <input type="password" id="loginPassword" name="loginPassword" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html> 

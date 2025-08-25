@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "Entity Features",
+"features": [
+{ "type": "Feature", "properties": { "Name": "Polyline_001", "description": "TANG TUM" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.8753887, 20.9668944 ], [ 105.87546, 20.9668096 ], [ 105.8755725, 20.966893 ], [ 105.8755518, 20.9669176 ], [ 105.8755858, 20.9669428 ], [ 105.8755351, 20.967003 ], [ 105.8753887, 20.9668944 ] ] } },
+{ "type": "Feature", "properties": { "Name": "Polyline_001", "description": "TANG TUM" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.8756093, 20.967058 ], [ 105.8756354, 20.9670773 ], [ 105.875686, 20.9670171 ], [ 105.87566, 20.9669978 ], [ 105.8756093, 20.967058 ] ] } },
+{ "type": "Feature", "properties": { "Name": "Polyline_001", "description": "TANG TUM" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.8755495, 20.9667032 ], [ 105.875662, 20.9667866 ], [ 105.8756826, 20.966762 ], [ 105.8757128, 20.9667844 ], [ 105.8757634, 20.9667242 ], [ 105.8756208, 20.9666184 ], [ 105.8755495, 20.9667032 ] ] } },
+{ "type": "Feature", "properties": { "Name": "Polyline_001", "description": "TANG TUM" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.8757789, 20.9668335 ], [ 105.8758049, 20.9668528 ], [ 105.8758556, 20.9667925 ], [ 105.8758295, 20.9667732 ], [ 105.8757789, 20.9668335 ] ] } },
+{ "type": "Feature", "properties": { "Name": "T.Tum", "description": "TANG TUM" }, "geometry": { "type": "Point", "coordinates": [ 105.8757945, 20.9668082 ] } }
+]
+}

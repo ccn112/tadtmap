@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị hệ thống - TADT Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <h1>Quản trị hệ thống</h1>
+                <div class="user-info">
+                    <span id="currentUser">Đang tải...</span>
+                    <button id="logoutBtn" class="btn btn-danger">Đăng xuất</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="admin-nav">
+            <button class="nav-tab active" data-tab="dashboard">Tổng quan</button>
+            <button class="nav-tab" data-tab="users">Quản lý người dùng</button>
+            <button class="nav-tab" data-tab="projects">Quản lý dự án</button>
+            <button class="nav-tab" data-tab="parcels">Quản lý thửa đất</button>
+            <button class="nav-tab" data-tab="permissions">Phân quyền</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Tổng số thửa đất</h3>
+                        <div class="stat-number" id="totalParcels">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tổng số dự án</h3>
+                        <div class="stat-number" id="totalProjects">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tổng số người dùng</h3>
+                        <div class="stat-number" id="totalUsers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Thửa đất mới hôm nay</h3>
+                        <div class="stat-number" id="todayParcels">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users" class="tab-content">
+                <div class="tab-header">
+                    <h2>Quản lý người dùng</h2>
+                    <button id="addUserBtn" class="btn btn-primary">Thêm người dùng</button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Họ tên</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Projects Tab -->
+            <div id="projects" class="tab-content">
+                <div class="tab-header">
+                    <h2>Quản lý dự án</h2>
+                    <button id="addProjectBtn" class="btn btn-primary">Thêm dự án</button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mã dự án</th>
+                                <th>Tên dự án</th>
+                                <th>Mô tả</th>
+                                <th>Số thửa đất</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <!-- Projects will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Parcels Tab -->
+            <div id="parcels" class="tab-content">
+                <div class="tab-header">
+                    <h2>Quản lý thửa đất</h2>
+                    <div class="header-actions">
+                        <button id="importExcelBtn" class="btn btn-success">Import Excel</button>
+                        <div class="filter-controls">
+                            <select id="adminProjectFilter" class="filter-select">
+                                <option value="">Tất cả dự án</option>
+                            </select>
+                            <select id="adminStatusFilter" class="filter-select">
+                                <option value="">Tất cả trạng thái</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mã thửa đất</th>
+                                <th>Tiêu đề</th>
+                                <th>Mã dự án</th>
+                                <th>Dự án</th>
+                                <th>Diện tích</th>
+                                <th>Người phụ trách</th>
+                                <th>Tình trạng pháp lý</th>
+                                <th>Tình trạng GPMB</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parcelsTableBody">
+                            <!-- Parcels will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Permissions Tab -->
+            <div id="permissions" class="tab-content">
+                <div class="tab-header">
+                    <h2>Phân quyền người dùng</h2>
+                    <button id="addPermissionBtn" class="btn btn-primary">Thêm phân quyền</button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Người dùng</th>
+                                <th>Dự án</th>
+                                <th>Quyền xem</th>
+                                <th>Quyền sửa</th>
+                                <th>Ngày cấp</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissionsTableBody">
+                            <!-- Permissions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Thêm người dùng mới</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="userEmail">Email:</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Mật khẩu:</label>
+                        <input type="password" id="userPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Họ tên:</label>
+                        <input type="text" id="userName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userRole">Vai trò:</label>
+                        <select id="userRole" required>
+                            <option value="user">Người dùng</option>
+                            <option value="admin">Quản trị viên</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addUserModal')">Hủy</button>
+                <button type="submit" form="addUserForm" class="btn btn-primary">Thêm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Thêm dự án mới</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addProjectForm">
+                    <div class="form-group">
+                        <label for="projectCode">Mã dự án:</label>
+                        <input type="text" id="projectCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectName">Tên dự án:</label>
+                        <input type="text" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Mô tả:</label>
+                        <textarea id="projectDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addProjectModal')">Hủy</button>
+                <button type="submit" form="addProjectForm" class="btn btn-primary">Thêm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Permission Modal -->
+    <div id="addPermissionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Thêm phân quyền mới</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addPermissionForm">
+                    <div class="form-group">
+                        <label for="permissionUser">Người dùng:</label>
+                        <select id="permissionUser" required>
+                            <option value="">Chọn người dùng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="permissionProject">Dự án:</label>
+                        <select id="permissionProject" required>
+                            <option value="">Chọn dự án</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="permissionView" checked> Quyền xem
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="permissionEdit"> Quyền sửa
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addPermissionModal')">Hủy</button>
+                <button type="submit" form="addPermissionForm" class="btn btn-primary">Thêm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Excel Modal -->
+    <div id="importExcelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import dữ liệu từ Excel</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="import-info">
+                    <h4>Hướng dẫn:</h4>
+                    <p>File Excel cần có các cột sau:</p>
+                    <ul>
+                        <li><strong>parcel_code</strong>: Mã thửa đất (bắt buộc)</li>
+                        <li><strong>title</strong>: Tên thửa đất</li>
+                        <li><strong>area</strong>: Diện tích</li>
+                        <li><strong>description</strong>: Mô tả</li>
+                        <li><strong>person_in_charge</strong>: Người phụ trách</li>
+                        <li><strong>legal_status</strong>: Trạng thái pháp lý</li>
+                        <li><strong>clearance_status</strong>: Trạng thái giải phóng</li>
+                    </ul>
+                    <p><strong>Lưu ý:</strong> Chỉ cập nhật thửa đất đã tồn tại theo mã thửa đất</p>
+                </div>
+                <form id="importExcelForm">
+                    <div class="form-group">
+                        <label for="excelFile">Chọn file Excel:</label>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('importExcelModal')">Hủy</button>
+                <button type="submit" form="importExcelForm" class="btn btn-success">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html> 

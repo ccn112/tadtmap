@@ -1,0 +1,181 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A1 - Biệt thự cao cấp",
+        "area": 450.0,
+        "description": "Lô biệt thự cao cấp với view hướng biển, diện tích 450m²",
+        "person_in_charge": "Nguyễn Văn An",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8500, 21.0200],
+          [105.8550, 21.0200],
+          [105.8550, 21.0250],
+          [105.8500, 21.0250],
+          [105.8500, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A2 - Biệt thự liền kề",
+        "area": 380.0,
+        "description": "Lô biệt thự liền kề, thiết kế hiện đại, diện tích 380m²",
+        "person_in_charge": "Trần Thị Bình",
+        "legal_status": "Đang xin",
+        "clearance_status": "Đang GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8550, 21.0200],
+          [105.8600, 21.0200],
+          [105.8600, 21.0250],
+          [105.8550, 21.0250],
+          [105.8550, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A3 - Shophouse",
+        "area": 280.0,
+        "description": "Lô shophouse thương mại, vị trí đắc địa, diện tích 280m²",
+        "person_in_charge": "Lê Văn Cường",
+        "legal_status": "Chưa có",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ff6b6b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8600, 21.0200],
+          [105.8650, 21.0200],
+          [105.8650, 21.0250],
+          [105.8600, 21.0250],
+          [105.8600, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B1 - Căn hộ cao tầng",
+        "area": 120.0,
+        "description": "Lô căn hộ cao tầng, view toàn cảnh, diện tích 120m²",
+        "person_in_charge": "Phạm Thị Dung",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8500, 21.0150],
+          [105.8550, 21.0150],
+          [105.8550, 21.0200],
+          [105.8500, 21.0200],
+          [105.8500, 21.0150]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B2 - Căn hộ studio",
+        "area": 85.0,
+        "description": "Lô căn hộ studio, thiết kế tối ưu, diện tích 85m²",
+        "person_in_charge": "Vũ Hoàng Nam",
+        "legal_status": "Đang xin",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8550, 21.0150],
+          [105.8600, 21.0150],
+          [105.8600, 21.0200],
+          [105.8550, 21.0200],
+          [105.8550, 21.0150]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô C1 - Khu vui chơi",
+        "area": 800.0,
+        "description": "Khu vui chơi giải trí, công viên nước, diện tích 800m²",
+        "person_in_charge": "Đặng Văn Hùng",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8650, 21.0200],
+          [105.8750, 21.0200],
+          [105.8750, 21.0300],
+          [105.8650, 21.0300],
+          [105.8650, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô D1 - Trung tâm thương mại",
+        "area": 1200.0,
+        "description": "Trung tâm thương mại, siêu thị, diện tích 1200m²",
+        "person_in_charge": "Ngô Thị Lan",
+        "legal_status": "Đang xin",
+        "clearance_status": "Đang GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8500, 21.0100],
+          [105.8700, 21.0100],
+          [105.8700, 21.0150],
+          [105.8500, 21.0150],
+          [105.8500, 21.0100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô E1 - Khu đậu xe",
+        "area": 600.0,
+        "description": "Khu đậu xe ngầm, bãi đậu xe công cộng, diện tích 600m²",
+        "person_in_charge": "Hoàng Văn Minh",
+        "legal_status": "Chưa có",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ff6b6b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8700, 21.0100],
+          [105.8800, 21.0100],
+          [105.8800, 21.0200],
+          [105.8700, 21.0200],
+          [105.8700, 21.0100]
+        ]]
+      }
+    }
+  ]
+} 

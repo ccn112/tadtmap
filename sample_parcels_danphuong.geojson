@@ -1,0 +1,17 @@
+{
+"type": "FeatureCollection",
+"name": "entities",
+"features": [
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.0, 21.0 ], [ 105.01, 21.0 ], [ 105.01, 21.01 ], [ 105.0, 21.01 ], [ 105.0, 21.0 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.01, 21.0 ], [ 105.02, 21.0 ], [ 105.02, 21.01 ], [ 105.01, 21.01 ], [ 105.01, 21.0 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.02, 21.0 ], [ 105.03, 21.0 ], [ 105.03, 21.01 ], [ 105.02, 21.01 ], [ 105.02, 21.0 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.03, 21.0 ], [ 105.04, 21.0 ], [ 105.04, 21.01 ], [ 105.03, 21.01 ], [ 105.03, 21.0 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.04, 21.0 ], [ 105.05, 21.0 ], [ 105.05, 21.01 ], [ 105.04, 21.01 ], [ 105.04, 21.0 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.0, 21.01 ], [ 105.01, 21.01 ], [ 105.01, 21.02 ], [ 105.0, 21.02 ], [ 105.0, 21.01 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.01, 21.01 ], [ 105.02, 21.01 ], [ 105.02, 21.02 ], [ 105.01, 21.02 ], [ 105.01, 21.01 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.02, 21.01 ], [ 105.03, 21.01 ], [ 105.03, 21.02 ], [ 105.02, 21.02 ], [ 105.02, 21.01 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.03, 21.01 ], [ 105.04, 21.01 ], [ 105.04, 21.02 ], [ 105.03, 21.02 ], [ 105.03, 21.01 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.04, 21.01 ], [ 105.05, 21.01 ], [ 105.05, 21.02 ], [ 105.04, 21.02 ], [ 105.04, 21.01 ] ] } },
+{ "type": "Feature", "properties": { "Layer": "0" }, "geometry": { "type": "LineString", "coordinates": [ [ 105.05, 21.0 ], [ 105.06, 21.0 ], [ 105.06, 21.01 ], [ 105.05, 21.01 ], [ 105.05, 21.0 ] ] } }
+]
+}

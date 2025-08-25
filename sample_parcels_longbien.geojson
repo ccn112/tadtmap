@@ -1,0 +1,247 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A1 - Biệt thự ven sông",
+        "area": 450.0,
+        "description": "Lô biệt thự cao cấp ven sông Hồng, view sông đẹp, diện tích 450m²",
+        "person_in_charge": "Nguyễn Văn An",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8500, 21.0200],
+          [105.8550, 21.0200],
+          [105.8550, 21.0250],
+          [105.8500, 21.0250],
+          [105.8500, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A2 - Biệt thự liền kề",
+        "area": 450.0,
+        "description": "Lô biệt thự liền kề, thiết kế hiện đại, diện tích 450m²",
+        "person_in_charge": "Trần Thị Bình",
+        "legal_status": "Đang xin",
+        "clearance_status": "Đang GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8550, 21.0200],
+          [105.8600, 21.0200],
+          [105.8600, 21.0250],
+          [105.8550, 21.0250],
+          [105.8550, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A3 - Shophouse thương mại",
+        "area": 450.0,
+        "description": "Lô shophouse thương mại, vị trí đắc địa ven sông, diện tích 450m²",
+        "person_in_charge": "Lê Văn Cường",
+        "legal_status": "Chưa có",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ff6b6b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8600, 21.0200],
+          [105.8650, 21.0200],
+          [105.8650, 21.0250],
+          [105.8600, 21.0250],
+          [105.8600, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A4 - Căn hộ cao cấp",
+        "area": 450.0,
+        "description": "Lô căn hộ cao cấp, view sông Hồng, diện tích 450m²",
+        "person_in_charge": "Phạm Thị Dung",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8650, 21.0200],
+          [105.8700, 21.0200],
+          [105.8700, 21.0250],
+          [105.8650, 21.0250],
+          [105.8650, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô A5 - Căn hộ studio",
+        "area": 450.0,
+        "description": "Lô căn hộ studio, thiết kế tối ưu, diện tích 450m²",
+        "person_in_charge": "Vũ Hoàng Nam",
+        "legal_status": "Đang xin",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8700, 21.0200],
+          [105.8750, 21.0200],
+          [105.8750, 21.0250],
+          [105.8700, 21.0250],
+          [105.8700, 21.0200]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B1 - Biệt thự hướng sông",
+        "area": 450.0,
+        "description": "Lô biệt thự hướng sông, view đẹp, diện tích 450m²",
+        "person_in_charge": "Đặng Văn Hùng",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8500, 21.0250],
+          [105.8550, 21.0250],
+          [105.8550, 21.0300],
+          [105.8500, 21.0300],
+          [105.8500, 21.0250]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B2 - Căn hộ duplex",
+        "area": 450.0,
+        "description": "Lô căn hộ duplex, thiết kế sang trọng, diện tích 450m²",
+        "person_in_charge": "Ngô Thị Lan",
+        "legal_status": "Đang xin",
+        "clearance_status": "Đang GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8550, 21.0250],
+          [105.8600, 21.0250],
+          [105.8600, 21.0300],
+          [105.8550, 21.0300],
+          [105.8550, 21.0250]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B3 - Shophouse liền kề",
+        "area": 450.0,
+        "description": "Lô shophouse liền kề, kinh doanh thuận lợi, diện tích 450m²",
+        "person_in_charge": "Hoàng Văn Minh",
+        "legal_status": "Chưa có",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ff6b6b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8600, 21.0250],
+          [105.8650, 21.0250],
+          [105.8650, 21.0300],
+          [105.8600, 21.0300],
+          [105.8600, 21.0250]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B4 - Căn hộ penthouse",
+        "area": 450.0,
+        "description": "Lô căn hộ penthouse, view toàn cảnh sông Hồng, diện tích 450m²",
+        "person_in_charge": "Lý Thị Hoa",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8650, 21.0250],
+          [105.8700, 21.0250],
+          [105.8700, 21.0300],
+          [105.8650, 21.0300],
+          [105.8650, 21.0250]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô B5 - Căn hộ garden",
+        "area": 450.0,
+        "description": "Lô căn hộ garden, không gian xanh, diện tích 450m²",
+        "person_in_charge": "Trần Văn Sơn",
+        "legal_status": "Đang xin",
+        "clearance_status": "Chưa GP",
+        "parcel_color": "#ffd43b"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8700, 21.0250],
+          [105.8750, 21.0250],
+          [105.8750, 21.0300],
+          [105.8700, 21.0300],
+          [105.8700, 21.0250]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Lô C1 - Khu vui chơi giải trí",
+        "area": 900.0,
+        "description": "Khu vui chơi giải trí ven sông, công viên nước, diện tích 900m²",
+        "person_in_charge": "Phạm Văn Tú",
+        "legal_status": "Đã xong",
+        "clearance_status": "Đã xong",
+        "parcel_color": "#51cf66"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [105.8750, 21.0200],
+          [105.8800, 21.0200],
+          [105.8800, 21.0300],
+          [105.8750, 21.0300],
+          [105.8750, 21.0200]
+        ]]
+      }
+    }
+  ]
+} 

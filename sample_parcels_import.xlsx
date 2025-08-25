@@ -1,0 +1,9 @@
+# This is a placeholder for an Excel file
+# In a real scenario, you would create an actual .xlsx file with the following columns:
+# parcel_code, title, area, description, person_in_charge, legal_status, clearance_status
+# 
+# Example data:
+# parcel_code | title | area | description | person_in_charge | legal_status | clearance_status
+# P1A1 | Thửa đất A1 | 150.5 | Thửa đất mẫu đầu tiên | Nguyễn Văn A | Đã xong | Đã xong
+# P1B2 | Thửa đất B2 | 200.0 | Thửa đất mẫu thứ hai | Trần Thị B | Đang xin | Đang GP
+# P1C3 | Thửa đất C3 | 120.75 | Thửa đất mẫu thứ ba | Lê Văn C | Chưa có | Chưa GP
