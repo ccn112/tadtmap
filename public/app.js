@@ -23,7 +23,7 @@ class TadtMap {
     // Khởi tạo bản đồ Leaflet
     initMap() {
         // Tạo bản đồ với tọa độ mặc định (Hà Nội)
-        this.map = L.map('map').setView([21.0285, 105.8542], 13);
+        this.map = L.map('map').setView([21.0999, 105.686332], 15);
 
         // Thêm tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -404,12 +404,12 @@ class TadtMap {
         // Tạo popup
         const popupContent = this.createParcelPopup(parcel);
         // Thay vì click, dùng mouseover/mouseout để hiện popup
-        layer.on('mouseover', function(e) {
-            layer.openPopup();
-        });
-        layer.on('mouseout', function(e) {
-            layer.closePopup();
-        });
+        // layer.on('mouseover', function(e) {
+        //     layer.openPopup();
+        // });
+        // layer.on('mouseout', function(e) {
+        //     layer.closePopup();
+        // });
         layer.bindPopup(popupContent);
         // Double click để edit
         layer.on('dblclick', () => {
