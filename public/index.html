@@ -84,27 +84,32 @@
             <div class="modal-body">
                 <form id="parcelForm">
                     <input type="hidden" id="parcelId">
-                    
+                    <div class="form-group">
+                        <label for="parcelCode">Mã thửa *</label>
+                        <input type="text" id="parcelCode" name="parcelCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectId">Dự án</label>
+                        <select id="projectId" name="projectId">
+                            <option value="">Chọn dự án</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="title">Tiêu đề *</label>
                         <input type="text" id="title" name="title" required>
                     </div>
-                    
                     <div class="form-group">
                         <label for="area">Diện tích (m²)</label>
                         <input type="number" id="area" name="area" step="0.01" min="0">
                     </div>
-                    
                     <div class="form-group">
                         <label for="description">Mô tả</label>
                         <textarea id="description" name="description" rows="3"></textarea>
                     </div>
-                    
                     <div class="form-group">
                         <label for="personInCharge">Người phụ trách</label>
                         <input type="text" id="personInCharge" name="personInCharge">
                     </div>
-                    
                     <div class="form-group">
                         <label for="legalStatus">Tình trạng pháp lý</label>
                         <select id="legalStatus" name="legalStatus">
@@ -113,7 +118,6 @@
                             <option value="Đã xong">Đã xong</option>
                         </select>
                     </div>
-                    
                     <div class="form-group">
                         <label for="clearanceStatus">Tình trạng GPMB</label>
                         <select id="clearanceStatus" name="clearanceStatus">
@@ -122,7 +126,6 @@
                             <option value="Đã xong">Đã xong</option>
                         </select>
                     </div>
-                    
                     <div class="form-group">
                         <label for="parcelColor">Màu sắc thửa đất</label>
                         <div class="color-picker-container">
@@ -132,14 +135,12 @@
                         </div>
                         <small>Chọn màu để hiển thị trên bản đồ</small>
                     </div>
-                    
                     <div class="form-group">
                         <label for="attachment">File đính kèm</label>
                         <input type="file" id="attachment" name="attachment" multiple>
                         <div id="currentAttachment" class="current-file"></div>
                         <small>Chọn một hoặc nhiều file để đính kèm</small>
                     </div>
-                    
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Lưu</button>
                         <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>

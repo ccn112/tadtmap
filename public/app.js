@@ -266,8 +266,18 @@ class TadtMap {
         try {
             const response = await fetch('/api/projects');
             if (!response.ok) throw new Error('Lỗi khi tải danh sách dự án');
-            
             this.projects = await response.json();
+            // Populate project select in modal form
+            const projectSelect = document.getElementById('projectId');
+            if (projectSelect) {
+                projectSelect.innerHTML = '<option value="">Chọn dự án</option>';
+                this.projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    projectSelect.appendChild(option);
+                });
+            }
         } catch (error) {
             console.error('Lỗi khi tải dự án:', error);
             this.projects = [];
@@ -347,6 +357,11 @@ class TadtMap {
     renderParcelsOnMap() {
         // Xóa layer cũ
         this.parcelsLayer.clearLayers();
+        // Xóa các label cũ nếu có
+        if (this.parcelLabels) {
+            this.parcelLabels.forEach(label => this.map.removeLayer(label));
+        }
+        this.parcelLabels = [];
 
         // Thêm các thửa đất mới
         this.parcels.forEach(parcel => {
@@ -357,28 +372,45 @@ class TadtMap {
                     properties: parcel,
                     geometry: geometry
                 };
-                
-                this.parcelsLayer.addData(feature);
+                const layer = this.parcelsLayer.addData(feature).getLayers().slice(-1)[0];
+                // Vẽ label mã thửa và diện tích
+                // this.addParcelLabel(layer, parcel);
             } catch (error) {
                 console.error('Lỗi parse geometry cho thửa đất:', parcel.id, error);
             }
         });
     }
 
+    addParcelLabel(layer, parcel) {
+        if (!layer.getBounds) return;
+        const center = layer.getBounds().getCenter();
+        let labelText = parcel.parcel_code || '';
+        // Chỉ hiện mã thửa, không hiện diện tích
+        const label = L.marker(center, {
+            icon: L.divIcon({
+                className: 'parcel-label',
+                html: `<div style="background:rgba(255,255,255,0.85);border-radius:4px;padding:2px 6px;font-size:15px;font-weight:bold;color:#333;text-align:center;line-height:1.2;">${labelText}</div>`,
+                iconSize: [60, 22],
+                iconAnchor: [30, 11]
+            }),
+            interactive: false
+        }).addTo(this.map);
+        this.parcelLabels.push(label);
+    }
+
     // Xử lý mỗi feature thửa đất
     onEachParcelFeature(feature, layer) {
         const parcel = feature.properties;
-        
         // Tạo popup
         const popupContent = this.createParcelPopup(parcel);
-        layer.bindPopup(popupContent);
-
-        // Click event
-        layer.on('click', () => {
-            this.selectParcel(parcel.id);
-            this.highlightParcel(layer);
+        // Thay vì click, dùng mouseover/mouseout để hiện popup
+        layer.on('mouseover', function(e) {
+            layer.openPopup();
         });
-
+        layer.on('mouseout', function(e) {
+            layer.closePopup();
+        });
+        layer.bindPopup(popupContent);
         // Double click để edit
         layer.on('dblclick', () => {
             this.editParcel(parcel.id);
@@ -387,9 +419,17 @@ class TadtMap {
 
     // Tạo popup cho thửa đất
     createParcelPopup(parcel) {
+        // Lấy tên dự án
+        let projectName = 'Không có dự án';
+        if (this.projects && parcel.project_id) {
+            const project = this.projects.find(p => p.id == parcel.project_id);
+            if (project) projectName = project.name;
+        }
         return `
             <div class="popup-content">
                 <h3>${parcel.title}</h3>
+                <p><strong>Mã thửa:</strong> ${parcel.parcel_code || ''}</p>
+                <p><strong>Dự án:</strong> ${projectName}</p>
                 <p><strong>Diện tích:</strong> ${parcel.area || 0} m²</p>
                 <p><strong>Mô tả:</strong> ${parcel.description || 'Chưa có'}</p>
                 <p><strong>Người phụ trách:</strong> ${parcel.person_in_charge || 'Chưa có'}</p>
@@ -467,8 +507,12 @@ class TadtMap {
             fillOpacity: 0.9
         });
 
-        // Zoom đến thửa đất
-        this.map.fitBounds(layer.getBounds(), { padding: [50, 50] });
+        // Zoom vừa đủ để nhìn rõ polygon và label, không giới hạn zoom
+        const bounds = layer.getBounds();
+        let targetZoom = this.map.getBoundsZoom(bounds, true);
+        // Nếu polygon nhỏ, zoom to hơn nữa
+        if (targetZoom < 18) targetZoom = Math.min(18, targetZoom + 2);
+        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: targetZoom });
     }
 
     // Hiển thị modal thêm thửa đất
@@ -571,9 +615,10 @@ class TadtMap {
     async saveParcel() {
         const formData = new FormData(document.getElementById('parcelForm'));
         const parcelId = document.getElementById('parcelId').value;
-        
         // Lấy dữ liệu từ form
         const parcelData = {
+            parcel_code: formData.get('parcelCode'),
+            project_id: formData.get('projectId') || null,
             title: formData.get('title'),
             area: parseFloat(formData.get('area')) || 0,
             description: formData.get('description'),
@@ -584,7 +629,6 @@ class TadtMap {
             attachment: formData.get('attachment') || '',
             geometry: this.getCurrentGeometry()
         };
-
         // Nếu đang sửa thửa đất và không có geometry mới, sử dụng geometry cũ
         if (!parcelData.geometry && parcelId) {
             const existingParcel = this.parcels.find(p => p.id == parcelId);
@@ -592,13 +636,11 @@ class TadtMap {
                 parcelData.geometry = existingParcel.geometry;
             }
         }
-
-        // Kiểm tra xem có geometry nào không
-        if (!parcelData.geometry) {
-            this.showNotification('Vui lòng vẽ polygon trên bản đồ trước', 'warning');
+        // Kiểm tra các trường bắt buộc
+        if (!parcelData.parcel_code || !parcelData.title || !parcelData.geometry) {
+            this.showNotification('Vui lòng nhập đầy đủ mã thửa, tiêu đề và vẽ polygon!', 'warning');
             return;
         }
-
         try {
             let response;
             if (parcelId) {
@@ -616,12 +658,9 @@ class TadtMap {
                     body: JSON.stringify(parcelData)
                 });
             }
-
             if (!response.ok) throw new Error('Lỗi khi lưu thửa đất');
-
             const savedParcel = await response.json();
             this.showNotification('Lưu thửa đất thành công!', 'success');
-            
             this.closeModal();
             this.loadParcels();
             this.clearDrawing();
@@ -696,34 +735,30 @@ class TadtMap {
 
     // Edit thửa đất
     editParcel(parcelId) {
-        const parcel = this.parcels.find(p => p.id === parcelId);
-        if (!parcel) return;
-
-        // Điền form
-        document.getElementById('parcelId').value = parcel.id;
-        document.getElementById('title').value = parcel.title;
-        document.getElementById('area').value = parcel.area || '';
-        document.getElementById('description').value = parcel.description || '';
-        document.getElementById('personInCharge').value = parcel.person_in_charge || '';
-        document.getElementById('legalStatus').value = parcel.legal_status;
-        document.getElementById('clearanceStatus').value = parcel.clearance_status;
-        document.getElementById('parcelColor').value = parcel.parcel_color || '#3388ff';
-
-        // Cập nhật color preview
-        this.updateColorPreview(parcel.parcel_color || '#3388ff');
-
-        // Hiển thị file đính kèm hiện tại
-        this.displayCurrentAttachments(parcel.attachment);
-
-        // Hiển thị polygon hiện có trên drawing layer để người dùng có thể chỉnh sửa
-        this.displayExistingParcelForEdit(parcel);
-
-        // Hiển thị modal
-        document.getElementById('modalTitle').textContent = 'Sửa thửa đất';
-        document.getElementById('parcelModal').style.display = 'block';
-
-        // Select thửa đất
-        this.selectParcel(parcelId);
+    const parcel = this.parcels.find(p => p.id === parcelId);
+    if (!parcel) return;
+    // Điền form
+    document.getElementById('parcelId').value = parcel.id;
+    document.getElementById('parcelCode').value = parcel.parcel_code || '';
+    document.getElementById('projectId').value = parcel.project_id || '';
+    document.getElementById('title').value = parcel.title;
+    document.getElementById('area').value = parcel.area || '';
+    document.getElementById('description').value = parcel.description || '';
+    document.getElementById('personInCharge').value = parcel.person_in_charge || '';
+    document.getElementById('legalStatus').value = parcel.legal_status;
+    document.getElementById('clearanceStatus').value = parcel.clearance_status;
+    document.getElementById('parcelColor').value = parcel.parcel_color || '#3388ff';
+    // Cập nhật color preview
+    this.updateColorPreview(parcel.parcel_color || '#3388ff');
+    // Hiển thị file đính kèm hiện tại
+    this.displayCurrentAttachments(parcel.attachment);
+    // Hiển thị polygon hiện có trên drawing layer để người dùng có thể chỉnh sửa
+    this.displayExistingParcelForEdit(parcel);
+    // Hiển thị modal
+    document.getElementById('modalTitle').textContent = 'Sửa thửa đất';
+    document.getElementById('parcelModal').style.display = 'block';
+    // Select thửa đất
+    this.selectParcel(parcelId);
     }
 
     // Xóa thửa đất
@@ -813,6 +848,7 @@ class TadtMap {
             }
 
             // Xử lý GeoJSON
+            console.log('GeoJSON:', geojson);
             if (geojson.type === 'FeatureCollection' && Array.isArray(geojson.features)) {
                 if (geojson.features.length === 0) {
                     this.showNotification('File không có feature nào', 'warning');
@@ -846,13 +882,14 @@ class TadtMap {
                     // Sử dụng thông tin từ properties nếu có
                     const properties = feature.properties || {};
                     const parcelData = {
-                        title: properties.title || `${baseTitle} - ${i + 1}`,
+                        title: properties.title || `${baseTitle}-${i + 1}`,
+                        parcel_code: properties.parcel_code || `${baseTitle}-${i + 1}`,
                         area: properties.area || this.calculateArea(feature.geometry),
-                        description: properties.description || '',
+                        description: properties.description || `EntityHandle: ${properties.EntityHandle}` || '',
                         person_in_charge: properties.person_in_charge || '',
-                        legal_status: properties.legal_status || 'Chưa có',
-                        clearance_status: properties.clearance_status || 'Chưa GP',
-                        parcel_color: properties.parcel_color || '#3388ff',
+                        legal_status: properties.legal_status || '',
+                        clearance_status: properties.clearance_status || '',
+                        parcel_color: properties.parcel_color || '#dadadaff',
                         attachment: '',
                         geometry: JSON.stringify(feature.geometry)
                     };
@@ -1183,4 +1220,4 @@ function deleteParcel(id) {
     if (window.tadtMap) {
         window.tadtMap.deleteParcel(id);
     }
-} 
+}

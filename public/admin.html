@@ -1,3 +1,30 @@
+    <!-- Import DXF Modal -->
+    <div id="importDxfModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import thửa đất từ DXF</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="importDxfForm">
+                    <div class="form-group">
+                        <label for="dxfFile">Chọn file DXF:</label>
+                        <input type="file" id="dxfFile" accept=".dxf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dxfProjectId">Dự án:</label>
+                        <select id="dxfProjectId">
+                            <option value="">Chọn dự án</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('importDxfModal')">Hủy</button>
+                <button type="submit" form="importDxfForm" class="btn btn-success">Import</button>
+            </div>
+        </div>
+    </div>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -75,6 +102,7 @@
                             <!-- Users will be loaded here -->
                         </tbody>
                     </table>
+                    <div class="pagination" id="usersPagination"></div>
                 </div>
             </div>
 
@@ -101,6 +129,7 @@
                             <!-- Projects will be loaded here -->
                         </tbody>
                     </table>
+                    <div class="pagination" id="projectsPagination"></div>
                 </div>
             </div>
 
@@ -110,6 +139,8 @@
                     <h2>Quản lý thửa đất</h2>
                     <div class="header-actions">
                         <button id="importExcelBtn" class="btn btn-success">Import Excel</button>
+                        <button id="exportExcelBtn" class="btn btn-warning">Export Excel</button>
+                        <button id="importDxfBtn" class="btn btn-info">Import DXF</button>
                         <div class="filter-controls">
                             <select id="adminProjectFilter" class="filter-select">
                                 <option value="">Tất cả dự án</option>
@@ -140,6 +171,7 @@
                             <!-- Parcels will be loaded here -->
                         </tbody>
                     </table>
+                    <div class="pagination" id="parcelsPagination"></div>
                 </div>
             </div>
 
@@ -165,7 +197,72 @@
                             <!-- Permissions will be loaded here -->
                         </tbody>
                     </table>
+                    <div class="pagination" id="permissionsPagination"></div>
                 </div>
+    <!-- Edit Parcel Modal -->
+    <div id="editParcelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Sửa thửa đất</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editParcelForm">
+                    <input type="hidden" id="editParcelId">
+                    <div class="form-group">
+                        <label for="editParcelCode">Mã thửa *</label>
+                        <input type="text" id="editParcelCode" name="editParcelCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProjectId">Dự án</label>
+                        <select id="editProjectId" name="editProjectId">
+                            <option value="">Chọn dự án</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTitle">Tiêu đề *</label>
+                        <input type="text" id="editTitle" name="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editArea">Diện tích (m²)</label>
+                        <input type="number" id="editArea" name="editArea" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Mô tả</label>
+                        <textarea id="editDescription" name="editDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPersonInCharge">Người phụ trách</label>
+                        <input type="text" id="editPersonInCharge" name="editPersonInCharge">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLegalStatus">Tình trạng pháp lý</label>
+                        <select id="editLegalStatus" name="editLegalStatus">
+                            <option value="Chưa có">Chưa có</option>
+                            <option value="Đang xin">Đang xin</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editClearanceStatus">Tình trạng GPMB</label>
+                        <select id="editClearanceStatus" name="editClearanceStatus">
+                            <option value="Chưa GP">Chưa GP</option>
+                            <option value="Đang GP">Đang GP</option>
+                            <option value="Đã xong">Đã xong</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editParcelColor">Màu sắc thửa đất</label>
+                        <input type="color" id="editParcelColor" name="editParcelColor" value="#3388ff">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editParcelModal')">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
             </div>
         </main>
     </div>
@@ -314,6 +411,7 @@
         </div>
     </div>
 
-    <script src="admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script type="module" src="admin.js"></script>
 </body>
 </html> 
