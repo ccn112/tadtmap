@@ -42,49 +42,49 @@ class TadtMap {
         // Tạo layer cho các polygon được vẽ
         this.drawnItems = new L.FeatureGroup();
         this.map.addLayer(this.drawnItems);
-         this.map.on('zoomend', () => {
-            const zoom = this.map.getZoom();
-            let weight = 2;
-            if (zoom >= 18) weight = 0.8;
-            else if (zoom >= 16) weight = 0.6;
-            else weight = 0.3;
-            this.parcelsLayer.eachLayer(layer => {
-                if (layer.setStyle) {
-                    layer.setStyle({ weight });
-                }
-            });
+        //  this.map.on('zoomend', () => {
+        //     const zoom = this.map.getZoom();
+        //     let weight = 2;
+        //     if (zoom >= 18) weight = 0.8;
+        //     else if (zoom >= 16) weight = 0.6;
+        //     else weight = 0.3;
+        //     this.parcelsLayer.eachLayer(layer => {
+        //         if (layer.setStyle) {
+        //             layer.setStyle({ weight });
+        //         }
+        //     });
 
-             //     const zoom = this.map.getZoom();
-            // Xóa toàn bộ tooltip cũ
-            // Xóa toàn bộ tooltip cũ
-            if (this.parcelTooltips && this.parcelTooltips.length) {
-                this.parcelTooltips.forEach(tip => {
-                    // if (tip.unbindTooltip) tip.unbindTooltip();
-                    if (tip.closeTooltip) tip.closeTooltip();
-                });
-                this.parcelTooltips = [];
-            }
-            if (zoom >= 18) {
-                // Thêm lại tooltip cho các thửa đất
-                this.parcelsLayer.eachLayer(layer => {
-                    if (layer.feature && layer.feature.properties && layer.feature.properties.parcel_code) {
-                        layer.bindTooltip(layer.feature.properties.parcel_code, {
-                            permanent: true,
-                            direction: 'center',
-                            className: 'parcel-label',
-                        }).openTooltip();
-                        this.parcelTooltips.push(layer);
-                    }
-                });
-            } else {
-                // Ẩn tooltip khi zoom nhỏ hơn
-                this.parcelsLayer.eachLayer(layer => {
-                    // if (layer.unbindTooltip) layer.unbindTooltip();
-                    if (layer.closeTooltip) layer.closeTooltip();
-                });
-                this.parcelTooltips = [];
-            }
-        });
+        //      //     const zoom = this.map.getZoom();
+        //     // Xóa toàn bộ tooltip cũ
+        //     // Xóa toàn bộ tooltip cũ
+        //     if (this.parcelTooltips && this.parcelTooltips.length) {
+        //         this.parcelTooltips.forEach(tip => {
+        //             // if (tip.unbindTooltip) tip.unbindTooltip();
+        //             if (tip.closeTooltip) tip.closeTooltip();
+        //         });
+        //         this.parcelTooltips = [];
+        //     }
+        //     if (zoom >= 18) {
+        //         // Thêm lại tooltip cho các thửa đất
+        //         this.parcelsLayer.eachLayer(layer => {
+        //             if (layer.feature && layer.feature.properties && layer.feature.properties.parcel_code) {
+        //                 layer.bindTooltip(layer.feature.properties.parcel_code, {
+        //                     permanent: true,
+        //                     direction: 'center',
+        //                     className: 'parcel-label',
+        //                 }).openTooltip();
+        //                 this.parcelTooltips.push(layer);
+        //             }
+        //         });
+        //     } else {
+        //         // Ẩn tooltip khi zoom nhỏ hơn
+        //         this.parcelsLayer.eachLayer(layer => {
+        //             // if (layer.unbindTooltip) layer.unbindTooltip();
+        //             if (layer.closeTooltip) layer.closeTooltip();
+        //         });
+        //         this.parcelTooltips = [];
+        //     }
+        // });
     }
 
     // Khởi tạo công cụ vẽ
