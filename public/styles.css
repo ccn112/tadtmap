@@ -1,18 +1,19 @@
+.parcel-label.leaflet-tooltip {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #222;
+    font-size: 8px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
 /* Parcel label trên bản đồ */
 .parcel-label {
-    pointer-events: none;
-    font-size: 13px;
-    font-weight: bold;
+    font-size: 8px;
     color: #333;
-    text-align: center;
-    background: rgba(255,255,255,0.8);
-    border-radius: 4px;
-    padding: 2px 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    line-height: 1.2;
-    min-width: 60px;
-    max-width: 120px;
-    white-space: normal;
+    text-align: center;   
+    border: none;
+    background-color: transparent;
 }
 /* Reset và base styles */
 * {

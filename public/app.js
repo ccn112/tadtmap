@@ -22,12 +22,53 @@ class TadtMap {
 
     // Khởi tạo bản đồ Leaflet
     initMap() {
+        
         // Tạo bản đồ với tọa độ mặc định (Hà Nội)
         this.map = L.map('map').setView([21.0999, 105.686332], 15);
 
+        // Thay đổi nét biên polygon theo zoom
+        this.map.on('zoomend', () => {
+            const zoom = this.map.getZoom();
+            let weight = 2;
+            if (zoom >= 18) weight = 0.8;
+            else if (zoom >= 16) weight = 0.6;
+            else weight = 0.3;
+            this.parcelsLayer.eachLayer(layer => {
+                if (layer.setStyle) {
+                    layer.setStyle({ weight });
+                }
+            });
+
+             //     const zoom = this.map.getZoom();
+            // Xóa toàn bộ tooltip cũ
+            if (this.parcelTooltips && this.parcelTooltips.length) {
+                this.parcelTooltips.forEach(tip => {
+                    if (tip.unbindTooltip) tip.unbindTooltip();
+                });
+            }
+            this.parcelTooltips = [];
+            if (zoom >= 18) {
+                // Thêm lại tooltip cho các thửa đất
+                this.parcelsLayer.eachLayer(layer => {
+                    if (layer.feature && layer.feature.properties && layer.feature.properties.parcel_code) {
+                        const tip = layer.bindTooltip(layer.feature.properties.parcel_code, {
+                            permanent: true,
+                            direction: 'center',
+                            className: 'parcel-label',                           
+                        }).openTooltip();
+                        this.parcelTooltips.push(layer);
+                    }
+                });
+            } else {
+                // Ẩn tooltip khi zoom nhỏ hơn
+                this.parcelsLayer.eachLayer(layer => {
+                    if (layer.unbindTooltip) layer.unbindTooltip();
+                });
+            }
+        });
         // Thêm tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            attribution: '© TDEmap'
         }).addTo(this.map);
 
         // Tạo layer cho các thửa đất
@@ -39,6 +80,35 @@ class TadtMap {
         // Tạo layer cho các polygon được vẽ
         this.drawnItems = new L.FeatureGroup();
         this.map.addLayer(this.drawnItems);
+        // Hiện mã thửa bằng tooltip khi zoom tối đa
+        this.parcelTooltips = [];
+        // this.map.on('zoomend', () => {
+        //     const zoom = this.map.getZoom();
+        //     // Xóa toàn bộ tooltip cũ
+        //     if (this.parcelTooltips && this.parcelTooltips.length) {
+        //         this.parcelTooltips.forEach(tip => tip.remove());
+        //     }
+        //     this.parcelTooltips = [];
+        //     if (zoom >= 18) {
+        //         // Thêm lại tooltip cho các thửa đất
+        //         this.parcelsLayer.eachLayer(layer => {
+        //             if (layer.feature && layer.feature.properties && layer.feature.properties.parcel_code) {
+        //                 const tip = layer.bindTooltip(layer.feature.properties.parcel_code, {
+        //                     permanent: true,
+        //                     direction: 'center',
+        //                     className: 'parcel-label',
+        //                     opacity: 0.9
+        //                 }).openTooltip();
+        //                 this.parcelTooltips.push(layer);
+        //             }
+        //         });
+        //     } else {
+        //         // Ẩn tooltip khi zoom nhỏ hơn
+        //         this.parcelsLayer.eachLayer(layer => {
+        //             if (layer.unbindTooltip) layer.unbindTooltip();
+        //         });
+        //     }
+        // });
     }
 
     // Khởi tạo công cụ vẽ
@@ -53,7 +123,7 @@ class TadtMap {
                     },
                     shapeOptions: {
                         color: '#3388ff',
-                        weight: 2
+                        weight: 1
                     }
                 },
                 polyline: false,
@@ -245,13 +315,45 @@ class TadtMap {
     // Load danh sách thửa đất từ API
     async loadParcels() {
         try {
+            // Lấy user hiện tại
+            let currentUser = null;
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                const resUser = await fetch('/api/auth/verify', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (resUser.ok) {
+                    currentUser = await resUser.json();
+                }
+            }
+            // Lấy quyền user
+            let allowedProjectIds = [];
+            if (currentUser) {
+                const resPerm = await fetch('/api/permissions');
+                if (resPerm.ok) {
+                    const perms = await resPerm.json();
+                    allowedProjectIds = perms.filter(p => p.user_id == currentUser.id && p.can_view).map(p => p.project_id);
+                }
+            }
+            // Lấy tất cả parcels
             const response = await fetch('/api/parcels');
             if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
+            let allParcels = await response.json();
+            // Nếu có phân quyền, chỉ lấy các thửa thuộc dự án user được xem
+            if (allowedProjectIds.length > 0) {
+                this.parcels = allParcels.filter(p => allowedProjectIds.includes(p.project_id));
+            }
+            if (currentUser && currentUser.role == 'superadmin') {                
+                this.parcels = allParcels;
+                console.log(currentUser.role);
+            }
             
-            this.parcels = await response.json();
+
+            // test project: 
+            // this.parcels = allParcels;
             this.renderParcelsList();
             this.renderParcelsOnMap();
-            
             // Load danh sách dự án và cập nhật bộ lọc
             await this.loadProjects();
             this.updateFilterOptions();
@@ -375,10 +477,28 @@ class TadtMap {
                 const layer = this.parcelsLayer.addData(feature).getLayers().slice(-1)[0];
                 // Vẽ label mã thửa và diện tích
                 // this.addParcelLabel(layer, parcel);
+                // this.addParcelTooltips(layer, parcel);
             } catch (error) {
                 console.error('Lỗi parse geometry cho thửa đất:', parcel.id, error);
             }
         });
+    }
+
+    addParcelTooltips(layer, parcel) {
+        console.log('Zoom hiện tại:', this.map.getZoom());
+        if (!this.map || !this.map.getZoom || this.map.getZoom() < 18) return;
+        if (!layer.getBounds || !parcel.parcel_code) return;
+
+        // Gắn tooltip trực tiếp vào polygon
+        layer.bindTooltip(parcel.parcel_code, {
+            permanent: true,
+            direction: "center",
+            className: "parcel-label",
+            opacity: 0.9
+        }).openTooltip();
+
+        // Lưu lại nếu cần quản lý để xóa sau này
+        this.parcelLabels.push(layer);
     }
 
     addParcelLabel(layer, parcel) {
@@ -389,9 +509,8 @@ class TadtMap {
         const label = L.marker(center, {
             icon: L.divIcon({
                 className: 'parcel-label',
-                html: `<div style="background:rgba(255,255,255,0.85);border-radius:4px;padding:2px 6px;font-size:15px;font-weight:bold;color:#333;text-align:center;line-height:1.2;">${labelText}</div>`,
-                iconSize: [60, 22],
-                iconAnchor: [30, 11]
+                html: `${labelText}`,
+                iconSize: [60, 22]
             }),
             interactive: false
         }).addTo(this.map);
@@ -463,7 +582,7 @@ class TadtMap {
 
         return {
             fillColor: fillColor,
-            weight: 2,
+            weight: 0.3,
             opacity: 1,
             color: '#495057',
             fillOpacity: 0.7
@@ -534,7 +653,18 @@ class TadtMap {
 
     // Hiển thị modal import
     showImportModal() {
-        const modal = document.getElementById('importModal');
+        const modal = document.getElementById('importModal') || document.getElementById('importExcelModal');
+        // Populate project select
+        const projectSelect = document.getElementById('importProject');
+        if (projectSelect && this.projects && this.projects.length) {
+            projectSelect.innerHTML = '<option value="">-- Chọn dự án --</option>';
+            this.projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                projectSelect.appendChild(option);
+            });
+        }
         modal.style.display = 'block';
     }
 
@@ -795,7 +925,8 @@ class TadtMap {
 
     // Import file
     async importFile() {
-        const formData = new FormData(document.getElementById('importForm'));
+    const formData = new FormData(document.getElementById('importForm') || document.getElementById('importExcelForm'));
+    const importProjectId = document.getElementById('importProject') ? document.getElementById('importProject').value : '';
         const file = formData.get('importFile');
         const title = formData.get('importTitle');
 
@@ -854,9 +985,9 @@ class TadtMap {
                     this.showNotification('File không có feature nào', 'warning');
                     return;
                 }
-                await this.importGeoJSONFeatures(geojson.features, title);
+                await this.importGeoJSONFeatures(geojson.features, title, importProjectId);
             } else if (geojson.type === 'Feature') {
-                await this.importGeoJSONFeatures([geojson], title);
+                await this.importGeoJSONFeatures([geojson], title, importProjectId);
             } else {
                 this.showNotification('File không hợp lệ. Cần có type là FeatureCollection hoặc Feature', 'error');
                 return;
@@ -870,36 +1001,34 @@ class TadtMap {
     }
 
     // Import các feature từ GeoJSON
-    async importGeoJSONFeatures(features, baseTitle) {
+    async importGeoJSONFeatures(features, baseTitle, importProjectId) {
         let successCount = 0;
         let errorCount = 0;
 
         for (let i = 0; i < features.length; i++) {
             const feature = features[i];
-            
             if (feature.geometry && feature.geometry.type === 'Polygon') {
                 try {
                     // Sử dụng thông tin từ properties nếu có
                     const properties = feature.properties || {};
                     const parcelData = {
-                        title: properties.title || `${baseTitle}-${i + 1}`,
-                        parcel_code: properties.parcel_code || `${baseTitle}-${i + 1}`,
-                        area: properties.area || this.calculateArea(feature.geometry),
-                        description: properties.description || `EntityHandle: ${properties.EntityHandle}` || '',
-                        person_in_charge: properties.person_in_charge || '',
-                        legal_status: properties.legal_status || '',
-                        clearance_status: properties.clearance_status || '',
-                        parcel_color: properties.parcel_color || '#dadadaff',
-                        attachment: '',
-                        geometry: JSON.stringify(feature.geometry)
-                    };
-
+                                title: properties.title || `${baseTitle}-${i + 1}`,
+                                parcel_code: properties.parcel_code || `${baseTitle}-${i + 1}`,
+                                area: properties.area || this.calculateArea(feature.geometry),
+                                description: properties.description || `EntityHandle: ${properties.EntityHandle}` || '',
+                                person_in_charge: properties.person_in_charge || '',
+                                legal_status: properties.legal_status || '',
+                                clearance_status: properties.clearance_status || '',
+                                parcel_color: properties.parcel_color || '#dadadaff',
+                                attachment: '',
+                                geometry: JSON.stringify(feature.geometry),
+                                project_id: importProjectId || properties.project_id || null
+                            };
                     const response = await fetch('/api/parcels', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(parcelData)
                     });
-
                     if (response.ok) {
                         successCount++;
                         console.log(`Import thành công: ${parcelData.title}`);
