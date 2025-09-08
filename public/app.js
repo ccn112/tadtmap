@@ -24,10 +24,23 @@ class TadtMap {
     initMap() {
         // Tạo bản đồ với tọa độ mặc định (Hà Nội)
         this.map = L.map('map').setView([21.0999, 105.686332], 15);
-
+        this.map.on('zoomend', () => {
+            // Xóa các label cũ
+            if (this.parcelLabels) {
+                this.parcelLabels.forEach(label => this.map.removeLayer(label));
+            }
+            this.parcelLabels = [];
+            // Vẽ lại label cho từng thửa đất
+            this.parcelsLayer.eachLayer((layer) => {
+                if (layer.feature) {
+                    this.addParcelLabel(layer, layer.feature.properties);
+                }
+            });
+        });
         // Thêm tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            maxZoom: 25,
+            attribution: '© TDEMap'
         }).addTo(this.map);
 
         // Tạo layer cho các thửa đất
@@ -53,7 +66,7 @@ class TadtMap {
                     },
                     shapeOptions: {
                         color: '#3388ff',
-                        weight: 2
+                        weight: 0.8
                     }
                 },
                 polyline: false,
@@ -247,7 +260,7 @@ class TadtMap {
         try {
             const response = await fetch('/api/parcels');
             if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
-            
+            console.log('Zoom level:', this.map.getZoom());
             this.parcels = await response.json();
             this.renderParcelsList();
             this.renderParcelsOnMap();
@@ -374,27 +387,93 @@ class TadtMap {
                 };
                 const layer = this.parcelsLayer.addData(feature).getLayers().slice(-1)[0];
                 // Vẽ label mã thửa và diện tích
+                this.addParcelTooltip(layer, parcel);
                 // this.addParcelLabel(layer, parcel);
+                // this.addParcelTextPath(layer, parcel);
             } catch (error) {
                 console.error('Lỗi parse geometry cho thửa đất:', parcel.id, error);
             }
         });
     }
+    addParcelTextPath(layer, parcel) {
+        if (!layer.getLatLngs) return;
+        if (!parcel.parcel_code) return;
 
+        // Chỉ hiện ở mức zoom tối đa (ví dụ 18 trở lên)
+        if (this.map.getZoom() < 18) return;
+
+        // Lấy cạnh đầu tiên của polygon
+        const latlngs = layer.getLatLngs()[0];
+        if (!latlngs || latlngs.length < 2) return;
+
+        // Tạo polyline từ cạnh đầu tiên
+        const polyline = L.polyline([latlngs[0], latlngs[1]], {color: 'transparent'}).addTo(this.map);
+
+        // Vẽ textPath
+        polyline.setText(parcel.parcel_code, {
+            repeat: false,
+            center: true,
+            offset: -2,
+            attributes: {
+                fill: '#222',
+                'font-size': '8px',                
+                'paint-order': 'stroke',
+                'stroke': '#fff',
+                'stroke-width': 0
+            }
+        });
+
+        this.parcelLabels.push(polyline);
+    }
+    updateParcelTextPaths() {
+        // Xóa các textPath cũ
+        if (this.parcelLabels) {
+            this.parcelLabels.forEach(label => {
+                if (label && this.map.hasLayer(label)) this.map.removeLayer(label);
+            });
+        }
+        this.parcelLabels = [];
+
+        // Chỉ hiện ở mức zoom tối đa
+        if (this.map.getZoom() < 18) return;
+
+        this.parcelsLayer.eachLayer((layer) => {
+            if (!layer.feature) return;
+            this.addParcelTextPath(layer, layer.feature.properties);
+        });
+    }
+    addParcelTooltip(layer, parcel) {
+        console.log('Zoom hiện tại:', this.map.getZoom());
+        if (!this.map || !this.map.getZoom || this.map.getZoom() < 18) return;
+        if (!layer.getBounds || !parcel.parcel_code) return;
+        layer.bindTooltip(parcel.parcel_code, {
+            permanent: true,
+            direction: "center",
+            className: "parcel-label",
+            opacity: 0.9
+        }).openTooltip();
+
+        this.parcelLabels.push(label);
+    }
     addParcelLabel(layer, parcel) {
-        if (!layer.getBounds) return;
+        console.log('Zoom hiện tại:', this.map.getZoom());
+        if (!this.map || !this.map.getZoom || this.map.getZoom() < 19) return;
+        if (!layer.getBounds || !parcel.parcel_code) return;
         const center = layer.getBounds().getCenter();
-        let labelText = parcel.parcel_code || '';
-        // Chỉ hiện mã thửa, không hiện diện tích
+
+        // Không nền, chữ nhỏ, căn giữa
         const label = L.marker(center, {
             icon: L.divIcon({
                 className: 'parcel-label',
-                html: `<div style="background:rgba(255,255,255,0.85);border-radius:4px;padding:2px 6px;font-size:15px;font-weight:bold;color:#333;text-align:center;line-height:1.2;">${labelText}</div>`,
-                iconSize: [60, 22],
-                iconAnchor: [30, 11]
+                html: `<span style=" font-size: 10px;
+                color: #616161ff;               
+                white-space: nowrap;
+                text-align: center;">${parcel.parcel_code}</span>`,
+                iconSize: [100, 20]
             }),
             interactive: false
         }).addTo(this.map);
+
         this.parcelLabels.push(label);
     }
 
@@ -463,7 +542,7 @@ class TadtMap {
 
         return {
             fillColor: fillColor,
-            weight: 2,
+            weight: 0.8,
             opacity: 1,
             color: '#495057',
             fillOpacity: 0.7
@@ -502,7 +581,7 @@ class TadtMap {
 
         // Highlight thửa đất được chọn
         layer.setStyle({
-            weight: 4,
+            weight: 2,
             color: '#007bff',
             fillOpacity: 0.9
         });
@@ -1050,7 +1129,7 @@ class TadtMap {
                 const coords = geometry.coordinates[0].map(coord => [coord[1], coord[0]]); // [lat, lng]
                 const polygon = L.polygon(coords, {
                     color: parcel.parcel_color || '#3388ff',
-                    weight: 2,
+                    weight: 0.8,
                     fillOpacity: 0.3
                 });
                 
