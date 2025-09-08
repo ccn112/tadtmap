@@ -26,14 +26,18 @@ class TadtMap {
         // Tạo bản đồ với tọa độ mặc định (Hà Nội)
         this.map = L.map('map').setView([21.0999, 105.686332], 15);
 
-        this.map.on('zoomend', () => {
+        this.map.on('zoomend moveend', () => {
             // Xóa các label cũ
             if (this.parcelLabels) {
                 this.parcelLabels.forEach(label => this.map.removeLayer(label));
             }
             this.parcelLabels = [];
             // Vẽ lại label cho từng thửa đất
+            const bounds = this.map.getBounds();
             this.parcelsLayer.eachLayer((layer) => {
+                // if (!layer.getBounds || !layer.feature) return;
+                const center = layer.getBounds().getCenter();
+                if (!bounds.contains(center)) return; // Bỏ qua nếu ngoài viewport
                 if (layer.feature) {
                     this.addParcelLabel(layer, layer.feature.properties);
                 }
@@ -455,6 +459,7 @@ class TadtMap {
         this.parcelLabels = [];
 
         // Thêm các thửa đất mới
+        const bounds = this.map.getBounds();          
         this.parcels.forEach(parcel => {
             try {
                 const geometry = JSON.parse(parcel.geometry);
@@ -465,7 +470,12 @@ class TadtMap {
                 };
                 const layer = this.parcelsLayer.addData(feature).getLayers().slice(-1)[0];
                 // Vẽ label mã thửa và diện tích
-                this.addParcelTooltip(layer, parcel);
+                const center = layer.getBounds().getCenter();
+                if (!bounds.contains(center)) return; // Bỏ qua nếu ngoài viewport
+                if (layer.feature) {
+                    this.addParcelLabel(layer, layer.feature.properties);
+                }
+                // this.addParcelTooltip(layer, parcel);
                 // this.addParcelLabel(layer, parcel);
 
             } catch (error) {
@@ -541,13 +551,22 @@ class TadtMap {
         const center = layer.getBounds().getCenter();
 
         // Không nền, chữ nhỏ, căn giữa
+        let title = parcel.parcel_code || '';
+        switch (this.map.getZoom()){
+            case 20: title += `<br/>${parcel.description || ''}`; break;
+            case 21: title += `<br/>${parcel.description || ''} <br/>${parcel.area || ''}m2`; break;
+            case 22: title += `<br/>${parcel.description || ''} <br/>${parcel.area || ''}m2 <br/>${parcel.legal_status || ''} - ${parcel.clearance_status || ''}`; break;
+            default: title += ''; break;
+        }
         const label = L.marker(center, {
             icon: L.divIcon({
                 className: 'parcel-label',
                 html: `<span style=" font-size: 10px;
                 color: #616161ff;               
                 white-space: nowrap;
-                text-align: center;">${parcel.parcel_code}</span>`,
+                text-align: center;">${title}
+                </span>
+                `,
                 iconSize: [100, 20]
 
             }),
@@ -555,6 +574,26 @@ class TadtMap {
         }).addTo(this.map);
 
         this.parcelLabels.push(label);
+    }
+    updateParcelLabels() {
+        // Xóa các label cũ
+        if (this.parcelLabels) {
+            this.parcelLabels.forEach(label => this.map.removeLayer(label));
+        }
+        this.parcelLabels = [];
+
+        // Chỉ hiện ở mức zoom tối đa (ví dụ: 18 trở lên)
+        if (!this.map || this.map.getZoom() < 19) return;
+
+        const bounds = this.map.getBounds();
+
+        this.parcelsLayer.eachLayer((layer) => {
+            if (!layer.getBounds || !layer.feature) return;
+            const center = layer.getBounds().getCenter();
+            if (!bounds.contains(center)) return; // Bỏ qua nếu ngoài viewport
+
+            this.addParcelLabel(layer, layer.feature.properties);
+        });
     }
 
     // Xử lý mỗi feature thửa đất
@@ -745,7 +784,7 @@ class TadtMap {
                     
                     // Redirect to admin panel
                     setTimeout(() => {
-                        window.location.href = '/admin.html';
+                        window.location.href = '/index.html';
                     }, 1000);
                 } else {
                     this.showNotification('Bạn không có quyền truy cập trang admin', 'warning');

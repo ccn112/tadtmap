@@ -6,7 +6,7 @@ const { db, initDatabase } = require('./db');
 const { registerApi } = require('./Api');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3003;
 
 // Middleware
 app.use(cors({

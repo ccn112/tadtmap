@@ -130,7 +130,38 @@ function registerApi(app, db) {
     });
     stmt.finalize();
   });
-
+// Cập nhật nhanh thửa đất (chỉ mã thửa)
+  app.put('/api/qparcels/:id', (req, res) => {
+    const { parcel_code, project_id, title, area, description, attachment, person_in_charge, legal_status, clearance_status, parcel_color, geometry } = req.body;
+    if (!parcel_code) {
+      res.status(400).json({ error: 'Mã thửa đất' });
+      return;
+    }
+    const stmt = db.prepare(`UPDATE parcels SET 
+      parcel_code = ?, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?`);
+    stmt.run([
+      parcel_code,
+      req.params.id
+    ], function(err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      if (this.changes === 0) {
+        res.status(404).json({ error: 'Không tìm thấy thửa đất' });
+        return;
+      }
+      db.get("SELECT * FROM parcels WHERE id = ?", [req.params.id], (err, row) => {
+        if (err) {
+          res.status(500).json({ error: err.message });
+          return;
+        }
+        res.json(row);
+      });
+    });
+    stmt.finalize();
+  });
   // Xóa thửa đất
   app.delete('/api/parcels/:id', (req, res) => {
     db.run("DELETE FROM parcels WHERE id = ?", [req.params.id], function(err) {

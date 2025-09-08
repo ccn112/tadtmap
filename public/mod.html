@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa nhanh mã thửa</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .quick-edit-popup {
+            min-width: 200px;
+            font-size: 14px;
+        }
+        .quick-edit-popup input {
+            width: 100%;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .quick-edit-popup button {
+            margin-right: 6px;
+        }
+        .parcel-label span {
+            border-radius: 4px;
+            padding: 2px 6px;
+            transition: background 0.5s;
+        }
+        #map { width: 100vw; height: 100vh; }
+        .hidden { display: none !important; }
+        header {
+            background: #1976d2;
+            color: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .header-actions button {
+            background: #fff;
+            color: #1976d2;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 16px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">TADTMap - Chỉnh sửa nhanh mã thửa</div>
+        <div class="header-actions">
+            <button id="loginBtn">Đăng nhập</button>
+            <span id="userInfo" class="hidden"></span>
+            <button id="logoutBtn" class="hidden">Đăng xuất</button>
+        </div>
+    </header>
+    <div id="map" class="hidden"></div>
+    <div id="no-permission" class="hidden" style="text-align:center;margin-top:40px;font-size:18px;color:#c0392b;">
+        Bạn không có quyền chỉnh sửa bản đồ. Vui lòng đăng nhập tài khoản quản trị!
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <script>
+    // Giả lập kiểm tra quyền (bạn thay bằng kiểm tra thực tế, ví dụ qua token)
+    function checkPermission() {
+        // Ví dụ: kiểm tra localStorage có token và quyền sửa
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user && user.role === 'admin';
+    }
+
+    function showLogin() {
+        document.getElementById('loginBtn').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('userInfo').classList.add('hidden');
+        document.getElementById('map').classList.add('hidden');
+        document.getElementById('no-permission').classList.remove('hidden');
+    }
+
+    function showMap(user) {
+        document.getElementById('loginBtn').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.remove('hidden');
+        document.getElementById('userInfo').classList.remove('hidden');
+        document.getElementById('userInfo').textContent = user.username || 'Admin';
+        document.getElementById('map').classList.remove('hidden');
+        document.getElementById('no-permission').classList.add('hidden');
+        console.log('Đã vào showMap, chuẩn bị load mod.js');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (checkPermission()) {
+            showMap(user);
+            // Chỉ load mod.js khi có quyền
+            const script = document.createElement('script');
+            script.src = 'mod.js';
+            document.body.appendChild(script);
+        } else {
+            showLogin();
+        }
+
+        document.getElementById('loginBtn').onclick = () => {
+            // Demo: Đăng nhập giả lập, thực tế bạn thay bằng form đăng nhập
+            localStorage.setItem('user', JSON.stringify({username: 'admin', role: 'admin'}));
+            location.reload();
+        };
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('user');
+            location.reload();
+        };
+    });
+    </script>
+</body>
+</html>
