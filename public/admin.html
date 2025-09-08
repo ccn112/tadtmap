@@ -375,6 +375,47 @@
         </div>
     </div>
 
+    <!-- Edit Permission Modal -->
+    <div id="editPermissionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Sửa phân quyền</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editPermissionForm">
+                    <input type="hidden" id="editPermissionId">
+                    <div class="form-group">
+                        <label for="editPermissionUser">Người dùng:</label>
+                        <select id="editPermissionUser" required>
+                            <option value="">Chọn người dùng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPermissionProject">Dự án:</label>
+                        <select id="editPermissionProject" required>
+                            <option value="">Chọn dự án</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="editPermissionView"> Quyền xem
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="editPermissionEdit"> Quyền sửa
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editPermissionModal')">Hủy</button>
+                <button type="submit" form="editPermissionForm" class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Import Excel Modal -->
     <div id="importExcelModal" class="modal">
         <div class="modal-content">
@@ -398,6 +439,12 @@
                     <p><strong>Lưu ý:</strong> Chỉ cập nhật thửa đất đã tồn tại theo mã thửa đất</p>
                 </div>
                 <form id="importExcelForm">
+                    <div class="form-group">
+                        <label for="importProject">Chọn dự án để gán thửa đất:</label>
+                        <select id="importProject" name="importProject" required>
+                            <option value="">-- Chọn dự án --</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="excelFile">Chọn file Excel:</label>
                         <input type="file" id="excelFile" accept=".xlsx,.xls" required>

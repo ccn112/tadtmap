@@ -5,6 +5,26 @@ import AdminParcels from './modules/admin-parcels.js';
 import AdminPermissions from './modules/admin-permissions.js';
 
 class AdminPanel {
+   
+    async loadProjects() {
+        try {
+            const res = await fetch('/api/projects');
+            this.projects = await res.json();
+            this.renderProjectsTable();
+        } catch (error) {
+            this.showNotification('Lỗi khi tải danh sách dự án', 'error');
+        }
+    }
+      // --- USERS ---
+    async loadUsers() {
+        try {
+            const res = await fetch('/api/users');
+            this.users = await res.json();
+            this.renderUsersTable();
+        } catch (error) {
+            this.showNotification('Lỗi khi tải danh sách người dùng', 'error');
+        }
+    }
     constructor() {
         this.currentUser = null;
         this.users = [];
@@ -184,13 +204,18 @@ class AdminPanel {
         }
     }
 
-    showModal(modalId) {
+    async showModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
-            modal.style.display = 'block';
-            if (modalId === 'addPermissionModal') {
-                this.permissionsModule.populatePermissionModal();
+            // Always reload users/projects before showing permission modals
+            if (modalId === 'addPermissionModal' || modalId === 'editPermissionModal') {
+                await this.loadUsers();
+                await this.loadProjects();
+                if (modalId === 'addPermissionModal') {
+                    this.permissionsModule.populatePermissionModal();
+                }
             }
+            modal.style.display = 'block';
         }
     }
 
@@ -223,48 +248,39 @@ class AdminPanel {
     showNotification(message, type = 'info') {
         alert(`${type.toUpperCase()}: ${message}`);
     }
-    // --- USERS ---
-    async loadUsers() {
-        try {
-            const res = await fetch('/api/users');
-            this.users = await res.json();
-            this.renderUsersTable();
-        } catch (error) {
-            this.showNotification('Lỗi khi tải danh sách người dùng', 'error');
+  
+    renderPermissionsTable() {
+        // Ensure users and projects are loaded before rendering
+        if (!this.users || this.users.length === 0) {
+            this.loadUsers().then(() => this.renderPermissionsTable());
+            return;
         }
-    }
-    renderUsersTable() {
-        const tbody = document.getElementById('usersTableBody');
+        if (!this.projects || this.projects.length === 0) {
+            this.loadProjects().then(() => this.renderPermissionsTable());
+            return;
+        }
+        const tbody = document.getElementById('permissionsTableBody');
         tbody.innerHTML = '';
-        const pageUsers = this.users.slice((this.usersPage-1)*this.pageSize, this.usersPage*this.pageSize);
-        pageUsers.forEach(user => {
+        const pagePerms = this.permissions.slice((this.permissionsPage-1)*this.pageSize, this.permissionsPage*this.pageSize);
+        pagePerms.forEach(perm => {
+            const user = this.users.find(u => u.id == perm.user_id);
+            const project = this.projects.find(p => p.id == perm.project_id);
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.email}</td>
-                <td>${user.name || ''}</td>
-                <td>${user.role}</td>
-                <td>${user.status || ''}</td>
+                <td>${user ? (user.name || user.email || user.username) : ''}</td>
+                <td>${project ? project.name : ''}</td>
+                <td>${perm.can_view ? '✔️' : ''}</td>
+                <td>${perm.can_edit ? '✔️' : ''}</td>
+                <td>${perm.created_at ? new Date(perm.created_at).toLocaleDateString() : ''}</td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="adminPanel.usersModule.editUser(${user.id})">Sửa</button>
-                    <button class="btn btn-sm btn-danger" onclick="adminPanel.usersModule.deleteUser(${user.id})">Xóa</button>
+                    <button class="btn btn-sm btn-primary" onclick="adminPanel.permissionsModule.openEditPermission(${perm.id})">Sửa</button>
+                    <button class="btn btn-sm btn-danger" onclick="adminPanel.permissionsModule.deletePermission(${perm.id})">Xóa</button>
                 </td>
             `;
             tbody.appendChild(row);
         });
         // Pagination
-        this.renderPagination('users', this.users.length);
-    }
-
-    // --- PROJECTS ---
-    async loadProjects() {
-        try {
-            const res = await fetch('/api/projects');
-            this.projects = await res.json();
-            this.renderProjectsTable();
-        } catch (error) {
-            this.showNotification('Lỗi khi tải danh sách dự án', 'error');
-        }
+        this.renderPagination('permissions', this.permissions.length);
     }
     renderProjectsTable() {
         const tbody = document.getElementById('projectsTableBody');
@@ -289,7 +305,28 @@ class AdminPanel {
         // Pagination
         this.renderPagination('projects', this.projects.length);
     }
-
+     renderUsersTable() {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        const pageUsers = this.users.slice((this.usersPage-1)*this.pageSize, this.usersPage*this.pageSize);
+        pageUsers.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.email}</td>
+                <td>${user.name || ''}</td>
+                <td>${user.role}</td>
+                <td>${user.status || ''}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="adminPanel.usersModule.editUser(${user.id})">Sửa</button>
+                    <button class="btn btn-sm btn-danger" onclick="adminPanel.usersModule.deleteUser(${user.id})">Xóa</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+        // Pagination
+        this.renderPagination('users', this.users.length);
+    }
     // --- PARCELS ---
     async loadParcels() {
         try {
@@ -333,8 +370,10 @@ class AdminPanel {
     // --- PERMISSIONS ---
     async loadPermissions() {
         try {
+
             const res = await fetch('/api/permissions');
             this.permissions = await res.json();
+            
             this.renderPermissionsTable();
         } catch (error) {
             this.showNotification('Lỗi khi tải danh sách phân quyền', 'error');
@@ -343,19 +382,23 @@ class AdminPanel {
     renderPermissionsTable() {
         const tbody = document.getElementById('permissionsTableBody');
         tbody.innerHTML = '';
+        
+        // this.projects = fetch('/api/projects').json();
         const pagePerms = this.permissions.slice((this.permissionsPage-1)*this.pageSize, this.permissionsPage*this.pageSize);
         pagePerms.forEach(perm => {
-            const user = this.users.find(u => u.id === perm.user_id);
-            const project = this.projects.find(p => p.id === perm.project_id);
+            const user = this.users.find(u => u.id == perm.user_id);
+            const project = this.projects.find(p => p.id == perm.project_id);
+            console.log(this.project);
+            console.log(this.user);
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${user ? user.email : perm.user_id}</td>
-                <td>${project ? project.name : perm.project_id}</td>
+                <td>${user ? (user.name || user.email || user.username) : ''}</td>
+                <td>${project ? project.name : ''}</td>
                 <td>${perm.can_view ? '✔️' : ''}</td>
                 <td>${perm.can_edit ? '✔️' : ''}</td>
                 <td>${perm.created_at ? new Date(perm.created_at).toLocaleDateString() : ''}</td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="adminPanel.permissionsModule.editPermission(${perm.id})">Sửa</button>
+                    <button class="btn btn-sm btn-primary" onclick="adminPanel.permissionsModule.openEditPermission(${perm.id})">Sửa</button>
                     <button class="btn btn-sm btn-danger" onclick="adminPanel.permissionsModule.deletePermission(${perm.id})">Xóa</button>
                 </td>
             `;

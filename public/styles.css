@@ -1,10 +1,21 @@
+.parcel-label.leaflet-tooltip {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #222;
+    font-size: 8px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
 /* Parcel label trên bản đồ */
 .parcel-label {
+
     pointer-events: none;
     font-size:10px;
     color: #ccc;
     text-align: center;   
     white-space: normal;
+
 }
 /* Reset và base styles */
 * {
