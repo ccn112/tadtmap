@@ -61,7 +61,37 @@
     
     <script>
     // Giả lập kiểm tra quyền (bạn thay bằng kiểm tra thực tế, ví dụ qua token)
+<<<<<<< Updated upstream
   
+=======
+    function checkPermission() {
+        // Ví dụ: kiểm tra localStorage có token và quyền sửa
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user && user.role === 'admin';
+    }
+
+    function showLogin() {
+        document.getElementById('loginBtn').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('userInfo').classList.add('hidden');
+        document.getElementById('map').classList.add('hidden');
+        document.getElementById('no-permission').classList.remove('hidden');
+    }
+
+    function showMap(user) {
+        document.getElementById('loginBtn').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.remove('hidden');
+        document.getElementById('userInfo').classList.remove('hidden');
+        document.getElementById('userInfo').textContent = user.username || 'Admin';
+        document.getElementById('map').classList.remove('hidden');
+        document.getElementById('no-permission').classList.add('hidden');
+        console.log('Đã vào showMap, chuẩn bị load mod.js');
+    }
+
+    
+>>>>>>> Stashed changes
     </script>
+    <script src="mod.js"></script>
+
 </body>
 </html>

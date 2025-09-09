@@ -14,9 +14,11 @@ class QuickEditMap {
         this.initMap();
         this.loadParcels();
         this.renderParcels();
+        
         this.updateParcelLabels();
 
         this.map.on('zoomend moveend', () => {
+            console.log('Map zoomed or moved, updating labels...');
             this.updateParcelLabels();
         });
     }
@@ -77,7 +79,7 @@ class QuickEditMap {
             this.parcelLabels.forEach(label => this.map.removeLayer(label));
         }
         this.parcelLabels = [];
-
+        console.log('Updating parcel labels...');
         if (!this.map || this.map.getZoom() < 19) return;
 
         const bounds = this.map.getBounds();

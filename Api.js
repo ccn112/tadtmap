@@ -89,29 +89,33 @@ function registerApi(app, db) {
 
   // Cập nhật thửa đất
   app.put('/api/parcels/:id', (req, res) => {
-    const { parcel_code, project_id, title, area, description, attachment, person_in_charge, legal_status, clearance_status, parcel_color, geometry } = req.body;
-    if (!parcel_code || !title || !geometry) {
-      res.status(400).json({ error: 'Mã thửa đất, tiêu đề và hình học là bắt buộc' });
+    // Lấy tất cả trường của bảng parcels từ req.body
+    const fields = [
+      'parcel_code','project_id','title','area','person_in_charge','legal_status','clearance_status','parcel_color','description',
+      'land_use_purpose','owner','sheet_number','parcel_number','red_book_number','purchased_area','outside_area','field','full_address','hamlet','ward','province',
+      'expected_unit_price','expected_total_price','expected_broker_fee','expected_notary_fee','expected_total_cost','transaction_status','purchased_area_actual','outside_area_actual','total_purchased_area','transfer_doc_status','name_transfer_status','transferee','unit_price','total_price','deposit','payment','broker_fee','notary_fee','total_cost','other_cost','yield_bonus','kpi_bonus','total_bonus','geometry','attachment'
+    ];
+    const updates = [];
+    const values = [];
+    fields.forEach(f => {
+      if (f in req.body) {
+        updates.push(`${f} = ?`);
+        values.push(req.body[f]);
+      }
+    });
+    if (!req.body.parcel_code) {
+      res.status(400).json({ error: 'Mã thửa đất là bắt buộc' });
       return;
     }
-    const stmt = db.prepare(`UPDATE parcels SET 
-      parcel_code = ?, project_id = ?, title = ?, area = ?, description = ?, attachment = ?, person_in_charge = ?, 
-      legal_status = ?, clearance_status = ?, parcel_color = ?, geometry = ?, updated_at = CURRENT_TIMESTAMP 
-      WHERE id = ?`);
-    stmt.run([
-      parcel_code,
-      project_id || null,
-      title,
-      area || 0,
-      description || '',
-      attachment || '',
-      person_in_charge || '',
-      legal_status || 'Chưa có',
-      clearance_status || 'Chưa GP',
-      parcel_color || '#ffd43b',
-      geometry,
-      req.params.id
-    ], function(err) {
+    if (updates.length === 0) {
+      res.status(400).json({ error: 'Không có trường nào để cập nhật' });
+      return;
+    }
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    const sql = `UPDATE parcels SET ${updates.join(', ')} WHERE id = ?`;
+    values.push(req.params.id);
+    const stmt = db.prepare(sql);
+    stmt.run(values, function(err) {
       if (err) {
         res.status(500).json({ error: err.message });
         return;

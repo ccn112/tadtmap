@@ -14,7 +14,7 @@
                     <div class="form-group">
                         <label for="dxfProjectId">Dự án:</label>
                         <select id="dxfProjectId">
-                            <option value="">Chọn dự án</option>
+                            <option value="">Không chọn dự án</option>
                         </select>
                     </div>
                 </form>
@@ -33,6 +33,11 @@
     <title>Quản trị hệ thống - TADT Map</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="admin.css">
+    <!-- AdminLTE + FontAwesome + jQuery -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -152,26 +157,30 @@
                     </div>
                 </div>
                 <div class="table-container">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Mã thửa đất</th>
-                                <th>Tiêu đề</th>
-                                <th>Mã dự án</th>
-                                <th>Dự án</th>
-                                <th>Diện tích</th>
-                                <th>Người phụ trách</th>
-                                <th>Tình trạng pháp lý</th>
-                                <th>Tình trạng GPMB</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="parcelsTableBody">
-                            <!-- Parcels will be loaded here -->
-                        </tbody>
-                    </table>
-                    <div class="pagination" id="parcelsPagination"></div>
+                                        <div class="table-responsive">
+                                            <table id="parcelsTable" class="table table-bordered table-hover">
+                                                    <thead class="thead-light">
+                                                            <tr>
+                                                                    <th>ID</th>
+                                                                    <th>Mã thửa đất</th>
+                                                                    <th>Tiêu đề</th>
+                                                                    <th>Mã dự án</th>
+                                                                    <th>Dự án</th>
+                                                                    <th>Diện tích</th>
+                                                                    <th>Người phụ trách</th>
+                                                                    <th>Tình trạng pháp lý</th>
+                                                                    <th>Tình trạng GPMB</th>
+                                                                    <th>Thao tác</th>
+                                                            </tr>
+                                                    </thead>
+                                                    <tbody id="parcelsTableBody">
+                                                            <!-- Parcels will be loaded here -->
+                                                    </tbody>
+                                            </table>
+                                        </div>
+                                        <nav aria-label="Phân trang thửa đất">
+                                            <ul class="pagination justify-content-center" id="parcelsPagination"></ul>
+                                        </nav>
                 </div>
             </div>
 
@@ -218,6 +227,154 @@
                         <select id="editProjectId" name="editProjectId">
                             <option value="">Chọn dự án</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLandUsePurpose">Mục đích sử dụng đất</label>
+                        <select id="editLandUsePurpose" name="editLandUsePurpose">
+                            <option value="">Chọn mục đích</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editOwner">Chủ hộ</label>
+                        <input type="text" id="editOwner" name="editOwner">
+                    </div>
+                    <div class="form-group">
+                        <label for="editSheetNumber">Số tờ</label>
+                        <input type="number" id="editSheetNumber" name="editSheetNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="editParcelNumber">Số thửa</label>
+                        <input type="number" id="editParcelNumber" name="editParcelNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="editRedBookNumber">Số sổ đỏ</label>
+                        <input type="text" id="editRedBookNumber" name="editRedBookNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPurchasedArea">Diện tích đất mua</label>
+                        <input type="number" id="editPurchasedArea" name="editPurchasedArea" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editOutsideArea">Diện tích đất ngoài</label>
+                        <input type="number" id="editOutsideArea" name="editOutsideArea" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editField">Cánh đồng</label>
+                        <input type="text" id="editField" name="editField">
+                    </div>
+                    <div class="form-group">
+                        <label for="editFullAddress">Địa chỉ đầy đủ</label>
+                        <input type="text" id="editFullAddress" name="editFullAddress">
+                    </div>
+                    <div class="form-group">
+                        <label for="editHamlet">Thôn/xóm</label>
+                        <input type="text" id="editHamlet" name="editHamlet">
+                    </div>
+                    <div class="form-group">
+                        <label for="editWard">Xã/phường</label>
+                        <input type="text" id="editWard" name="editWard">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProvince">Tỉnh/thành</label>
+                        <input type="text" id="editProvince" name="editProvince">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpectedUnitPrice">Đơn giá mua dự kiến</label>
+                        <input type="number" id="editExpectedUnitPrice" name="editExpectedUnitPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpectedTotalPrice">Thành tiền mua dự kiến</label>
+                        <input type="number" id="editExpectedTotalPrice" name="editExpectedTotalPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpectedBrokerFee">Phí môi giới dự kiến</label>
+                        <input type="number" id="editExpectedBrokerFee" name="editExpectedBrokerFee" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpectedNotaryFee">Phí công chứng dự kiến</label>
+                        <input type="number" id="editExpectedNotaryFee" name="editExpectedNotaryFee" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpectedTotalCost">Tổng chi phí dự kiến</label>
+                        <input type="number" id="editExpectedTotalCost" name="editExpectedTotalCost" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTransactionStatus">Tình trạng giao dịch</label>
+                        <select id="editTransactionStatus" name="editTransactionStatus">
+                            <option value="">Chọn tình trạng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPurchasedAreaActual">Diện tích đã mua</label>
+                        <input type="number" id="editPurchasedAreaActual" name="editPurchasedAreaActual" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editOutsideAreaActual">Diện tích ngoài đã mua</label>
+                        <input type="number" id="editOutsideAreaActual" name="editOutsideAreaActual" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTotalPurchasedArea">Tổng diện tích đã mua</label>
+                        <input type="number" id="editTotalPurchasedArea" name="editTotalPurchasedArea" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTransferDocStatus">Tình trạng hồ sơ chuyển nhượng</label>
+                        <select id="editTransferDocStatus" name="editTransferDocStatus">
+                            <option value="">Chọn tình trạng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editNameTransferStatus">Tình trạng sang tên</label>
+                        <select id="editNameTransferStatus" name="editNameTransferStatus">
+                            <option value="">Chọn tình trạng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTransferee">Người nhận chuyển nhượng</label>
+                        <input type="text" id="editTransferee" name="editTransferee">
+                    </div>
+                    <div class="form-group">
+                        <label for="editUnitPrice">Đơn giá mua</label>
+                        <input type="number" id="editUnitPrice" name="editUnitPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTotalPrice">Thành tiền mua</label>
+                        <input type="number" id="editTotalPrice" name="editTotalPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDeposit">Đặt cọc</label>
+                        <input type="number" id="editDeposit" name="editDeposit" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPayment">Thanh toán</label>
+                        <input type="number" id="editPayment" name="editPayment" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBrokerFee">Phí môi giới</label>
+                        <input type="number" id="editBrokerFee" name="editBrokerFee" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editNotaryFee">Phí công chứng</label>
+                        <input type="number" id="editNotaryFee" name="editNotaryFee" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTotalCost">Tổng chi phí</label>
+                        <input type="number" id="editTotalCost" name="editTotalCost" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editOtherCost">Chi phí khác</label>
+                        <input type="number" id="editOtherCost" name="editOtherCost" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editYieldBonus">Thưởng sản lượng</label>
+                        <input type="number" id="editYieldBonus" name="editYieldBonus" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editKpiBonus">Thưởng KPI</label>
+                        <input type="number" id="editKpiBonus" name="editKpiBonus" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTotalBonus">Tổng thưởng</label>
+                        <input type="number" id="editTotalBonus" name="editTotalBonus" step="0.01">
                     </div>
                     <div class="form-group">
                         <label for="editTitle">Tiêu đề *</label>
@@ -440,9 +597,9 @@
                 </div>
                 <form id="importExcelForm">
                     <div class="form-group">
-                        <label for="importProject">Chọn dự án để gán thửa đất:</label>
-                        <select id="importProject" name="importProject" required>
-                            <option value="">-- Chọn dự án --</option>
+                        <label for="importProject">Chọn dự án để gán thửa đất (không bắt buộc):</label>
+                        <select id="importProject" name="importProject">
+                            <option value="">-- Không chọn dự án --</option>
                         </select>
                     </div>
                     <div class="form-group">

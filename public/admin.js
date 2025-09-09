@@ -206,16 +206,31 @@ class AdminPanel {
 
     async showModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) {
-            // Always reload users/projects before showing permission modals
-            if (modalId === 'addPermissionModal' || modalId === 'editPermissionModal') {
-                await this.loadUsers();
-                await this.loadProjects();
-                if (modalId === 'addPermissionModal') {
-                    this.permissionsModule.populatePermissionModal();
-                }
+        if (!modal) return;
+        // Always show modal, and bring to front if needed
+        if (modalId === 'addPermissionModal' || modalId === 'editPermissionModal') {
+            await this.loadUsers();
+            await this.loadProjects();
+            if (modalId === 'addPermissionModal') {
+                this.permissionsModule.populatePermissionModal();
             }
-            modal.style.display = 'block';
+        }
+        modal.style.display = 'block';
+        modal.classList.add('show');
+        modal.style.zIndex = 1050;
+        // Optional: add backdrop for modal
+        if (!document.getElementById('modal-backdrop')) {
+            const backdrop = document.createElement('div');
+            backdrop.id = 'modal-backdrop';
+            backdrop.style.position = 'fixed';
+            backdrop.style.top = 0;
+            backdrop.style.left = 0;
+            backdrop.style.width = '100vw';
+            backdrop.style.height = '100vh';
+            backdrop.style.background = 'rgba(0,0,0,0.4)';
+            backdrop.style.zIndex = 1040;
+            backdrop.onclick = () => this.closeModal(modalId);
+            document.body.appendChild(backdrop);
         }
     }
 
@@ -223,7 +238,10 @@ class AdminPanel {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.style.display = 'none';
+            modal.classList.remove('show');
         }
+        const backdrop = document.getElementById('modal-backdrop');
+        if (backdrop) backdrop.remove();
     }
 
     async logout() {
@@ -348,7 +366,7 @@ class AdminPanel {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${parcel.id}</td>
-                <td>${parcel.parcel_code || ''}</td>
+                <td><a href="parcel-detail.html?id=${parcel.id}" target="_blank">${parcel.parcel_code || ''}</a></td>
                 <td>${parcel.title}</td>
                 <td>${projectCode}</td>
                 <td>${projectName}</td>
@@ -357,8 +375,8 @@ class AdminPanel {
                 <td>${parcel.legal_status || ''}</td>
                 <td>${parcel.clearance_status || ''}</td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="adminPanel.parcelsModule.editParcel(${parcel.id})">Sửa</button>
-                    <button class="btn btn-sm btn-danger" onclick="adminPanel.parcelsModule.deleteParcel(${parcel.id})">Xóa</button>
+                    <button class="btn btn-sm btn-primary" title="Sửa" onclick="window.adminPanel.parcelsModule.editParcel(${parcel.id})"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" title="Xóa" onclick="window.adminPanel.parcelsModule.deleteParcel(${parcel.id})"><i class="fas fa-trash"></i></button>
                 </td>
             `;
             tbody.appendChild(row);

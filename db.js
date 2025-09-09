@@ -5,6 +5,77 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('database.db');
 
 function initDatabase() {
+    // Thêm trường created_at cho bảng parcels nếu chưa có
+    db.all("PRAGMA table_info(parcels)", (err, columns) => {
+      if (err) {
+        console.error('Lỗi kiểm tra cột parcels:', err);
+        return;
+      }
+      if (!columns.some(c => c.name === 'created_at')) {
+        db.run("ALTER TABLE parcels ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", (err) => {
+          if (err) {
+            console.error('Lỗi khi thêm cột created_at vào parcels:', err);
+          } else {
+            console.log('Đã thêm cột created_at vào bảng parcels');
+          }
+        });
+      }
+    });
+    // Danh sách các trường mới cần bổ sung cho bảng parcels
+    const newParcelColumns = [
+      { name: 'land_use_purpose', type: 'TEXT' },
+      { name: 'owner', type: 'TEXT' },
+      { name: 'sheet_number', type: 'TEXT' },
+      { name: 'parcel_number', type: 'TEXT' },
+      { name: 'red_book_number', type: 'TEXT' },
+      { name: 'purchased_area', type: 'REAL' },
+      { name: 'outside_area', type: 'REAL' },
+      { name: 'field', type: 'TEXT' },
+      { name: 'full_address', type: 'TEXT' },
+      { name: 'hamlet', type: 'TEXT' },
+      { name: 'ward', type: 'TEXT' },
+      { name: 'province', type: 'TEXT' },
+      { name: 'expected_unit_price', type: 'REAL' },
+      { name: 'expected_total_price', type: 'REAL' },
+      { name: 'expected_broker_fee', type: 'REAL' },
+      { name: 'expected_notary_fee', type: 'REAL' },
+      { name: 'expected_total_cost', type: 'REAL' },
+      { name: 'transaction_status', type: 'TEXT' },
+      { name: 'purchased_area_actual', type: 'REAL' },
+      { name: 'outside_area_actual', type: 'REAL' },
+      { name: 'total_purchased_area', type: 'REAL' },
+      { name: 'transfer_doc_status', type: 'TEXT' },
+      { name: 'name_transfer_status', type: 'TEXT' },
+      { name: 'transferee', type: 'TEXT' },
+      { name: 'unit_price', type: 'REAL' },
+      { name: 'total_price', type: 'REAL' },
+      { name: 'deposit', type: 'REAL' },
+      { name: 'payment', type: 'REAL' },
+      { name: 'broker_fee', type: 'REAL' },
+      { name: 'notary_fee', type: 'REAL' },
+      { name: 'total_cost', type: 'REAL' },
+      { name: 'other_cost', type: 'REAL' },
+      { name: 'yield_bonus', type: 'REAL' },
+      { name: 'kpi_bonus', type: 'REAL' },
+      { name: 'total_bonus', type: 'REAL' }
+    ];
+    db.all("PRAGMA table_info(parcels)", (err, columns) => {
+      if (err) {
+        console.error('Lỗi kiểm tra cột parcels:', err);
+        return;
+      }
+      newParcelColumns.forEach(col => {
+        if (!columns.some(c => c.name === col.name)) {
+          db.run(`ALTER TABLE parcels ADD COLUMN ${col.name} ${col.type}`,(err) => {
+            if (err) {
+              console.error(`Lỗi khi thêm cột ${col.name} vào parcels:`, err);
+            } else {
+              console.log(`Đã thêm cột ${col.name} vào bảng parcels`);
+            }
+          });
+        }
+      });
+    });
   db.serialize(() => {
     // Tạo bảng projects
     db.run(`CREATE TABLE IF NOT EXISTS projects (

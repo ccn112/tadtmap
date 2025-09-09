@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { db, initDatabase } = require('./db');
+const { runMigrations } = require('./migrate');
 const { registerApi } = require('./Api');
 
 const app = express();
@@ -27,8 +28,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Khởi tạo database
-initDatabase();
+// Chạy migrate trước khi khởi tạo database
+runMigrations(() => {
+  initDatabase();
+});
 
 // Đăng ký các route API
 registerApi(app, db);
