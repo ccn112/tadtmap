@@ -12,7 +12,7 @@ class QuickEditMap {
 
     async init() {
         this.initMap();
-        await this.loadParcels();
+        this.loadParcels();
         this.renderParcels();
         this.updateParcelLabels();
 
@@ -40,6 +40,8 @@ class QuickEditMap {
 
     async loadParcels() {
         this.parcels = await fetch('/api/parcels').then(r => r.json());
+        this.renderParcels();
+        console.log('Loaded parcels:', this.parcels.length);
     }
 
     renderParcels() {

@@ -53,66 +53,15 @@
 <body>
     <header>
         <div class="header-title">TADTMap - Chỉnh sửa nhanh mã thửa</div>
-        <div class="header-actions">
-            <button id="loginBtn">Đăng nhập</button>
-            <span id="userInfo" class="hidden"></span>
-            <button id="logoutBtn" class="hidden">Đăng xuất</button>
-        </div>
+       
     </header>
-    <div id="map" class="hidden"></div>
-    <div id="no-permission" class="hidden" style="text-align:center;margin-top:40px;font-size:18px;color:#c0392b;">
-        Bạn không có quyền chỉnh sửa bản đồ. Vui lòng đăng nhập tài khoản quản trị!
-    </div>
+    <div id="map" class="hidden"></div>   
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="mod.js"></script>
     
     <script>
     // Giả lập kiểm tra quyền (bạn thay bằng kiểm tra thực tế, ví dụ qua token)
-    function checkPermission() {
-        // Ví dụ: kiểm tra localStorage có token và quyền sửa
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        return user && user.role === 'admin';
-    }
-
-    function showLogin() {
-        document.getElementById('loginBtn').classList.remove('hidden');
-        document.getElementById('logoutBtn').classList.add('hidden');
-        document.getElementById('userInfo').classList.add('hidden');
-        document.getElementById('map').classList.add('hidden');
-        document.getElementById('no-permission').classList.remove('hidden');
-    }
-
-    function showMap(user) {
-        document.getElementById('loginBtn').classList.add('hidden');
-        document.getElementById('logoutBtn').classList.remove('hidden');
-        document.getElementById('userInfo').classList.remove('hidden');
-        document.getElementById('userInfo').textContent = user.username || 'Admin';
-        document.getElementById('map').classList.remove('hidden');
-        document.getElementById('no-permission').classList.add('hidden');
-        console.log('Đã vào showMap, chuẩn bị load mod.js');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (checkPermission()) {
-            showMap(user);
-            // Chỉ load mod.js khi có quyền
-            const script = document.createElement('script');
-            script.src = 'mod.js';
-            document.body.appendChild(script);
-        } else {
-            showLogin();
-        }
-
-        document.getElementById('loginBtn').onclick = () => {
-            // Demo: Đăng nhập giả lập, thực tế bạn thay bằng form đăng nhập
-            localStorage.setItem('user', JSON.stringify({username: 'admin', role: 'admin'}));
-            location.reload();
-        };
-        document.getElementById('logoutBtn').onclick = () => {
-            localStorage.removeItem('user');
-            location.reload();
-        };
-    });
+  
     </script>
 </body>
 </html>
