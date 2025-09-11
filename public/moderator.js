@@ -1,6 +1,4 @@
-
-
-// QuickEditMap sẽ thay thế logic thao tác nhanh trên bản đồ
+// TADT Map - Quản lý thửa đất
 class TadtMap {
     constructor() {
         this.map = null;
@@ -60,50 +58,7 @@ class TadtMap {
 
         // Tạo layer cho các polygon được vẽ
         this.drawnItems = new L.FeatureGroup();
-        this.map.addLayer(this.drawnItems);
-        //  this.map.on('zoomend', () => {
-        //     const zoom = this.map.getZoom();
-        //     let weight = 2;
-        //     if (zoom >= 18) weight = 0.8;
-        //     else if (zoom >= 16) weight = 0.6;
-        //     else weight = 0.3;
-        //     this.parcelsLayer.eachLayer(layer => {
-        //         if (layer.setStyle) {
-        //             layer.setStyle({ weight });
-        //         }
-        //     });
-
-        //      //     const zoom = this.map.getZoom();
-        //     // Xóa toàn bộ tooltip cũ
-        //     // Xóa toàn bộ tooltip cũ
-        //     if (this.parcelTooltips && this.parcelTooltips.length) {
-        //         this.parcelTooltips.forEach(tip => {
-        //             // if (tip.unbindTooltip) tip.unbindTooltip();
-        //             if (tip.closeTooltip) tip.closeTooltip();
-        //         });
-        //         this.parcelTooltips = [];
-        //     }
-        //     if (zoom >= 18) {
-        //         // Thêm lại tooltip cho các thửa đất
-        //         this.parcelsLayer.eachLayer(layer => {
-        //             if (layer.feature && layer.feature.properties && layer.feature.properties.parcel_code) {
-        //                 layer.bindTooltip(layer.feature.properties.parcel_code, {
-        //                     permanent: true,
-        //                     direction: 'center',
-        //                     className: 'parcel-label',
-        //                 }).openTooltip();
-        //                 this.parcelTooltips.push(layer);
-        //             }
-        //         });
-        //     } else {
-        //         // Ẩn tooltip khi zoom nhỏ hơn
-        //         this.parcelsLayer.eachLayer(layer => {
-        //             // if (layer.unbindTooltip) layer.unbindTooltip();
-        //             if (layer.closeTooltip) layer.closeTooltip();
-        //         });
-        //         this.parcelTooltips = [];
-        //     }
-        // });
+        this.map.addLayer(this.drawnItems);        
     }
 
     // Khởi tạo công cụ vẽ
@@ -166,46 +121,7 @@ class TadtMap {
         // Add parcel button - removed from header, still available via drawing controls
         // Users can still add parcels by drawing on the map
 
-        // Drawing controls
-        document.getElementById('drawPolygonBtn').addEventListener('click', () => {
-            this.startDrawing();
-        });
-
-        document.getElementById('editBtn').addEventListener('click', () => {
-            this.startEditing();
-        });
-
-        document.getElementById('deleteBtn').addEventListener('click', () => {
-            this.deleteSelectedParcel();
-        });
-
-        // Filters
-        document.getElementById('projectFilter').addEventListener('change', () => {
-            this.filterParcels();
-        });
-
-        document.getElementById('personInChargeFilter').addEventListener('change', () => {
-            this.filterParcels();
-        });
-
-        document.getElementById('legalStatusFilter').addEventListener('change', () => {
-            this.filterParcels();
-        });
-
-        document.getElementById('clearanceStatusFilter').addEventListener('change', () => {
-            this.filterParcels();
-        });
-
-        // Toggle filters button
-        document.getElementById('toggleFiltersBtn').addEventListener('click', () => {
-            this.toggleFilters();
-        });
-
-        // Toggle sidebar button (mobile)
-        document.getElementById('sidebarToggleBtn').addEventListener('click', () => {
-            this.toggleSidebar();
-        });
-
+       
         // Color picker events
         this.bindColorPickerEvents();
 
@@ -323,6 +239,7 @@ class TadtMap {
                     currentUser = await resUser.json();
                 }
             }
+            console.log('Current user:', currentUser);
             // Lấy quyền user
             let allowedProjectIds = [];
             if (currentUser) {
@@ -347,11 +264,9 @@ class TadtMap {
                 console.log(currentUser.role);
             }           
 
-            this.renderParcelsList();
+            // this.renderParcelsList();
+            // console.log('3 Rendering parcels on map...');
             this.renderParcelsOnMap();
-            // Load danh sách dự án và cập nhật bộ lọc
-            await this.loadProjects();
-            this.updateFilterOptions();
         } catch (error) {
             console.error('Lỗi:', error);
             this.showNotification('Lỗi khi tải dữ liệu thửa đất', 'error');

@@ -12,19 +12,20 @@ class QuickEditMap {
 
     async init() {
         this.initMap();
-        this.loadParcels();
-        this.renderParcels();
-        
-        this.updateParcelLabels();
-
+        await this.loadParcels();
+        // this.loadParcels();
+        // this.renderParcels();
+        // this.updateParcelLabels();
         this.map.on('zoomend moveend', () => {
-            console.log('Map zoomed or moved, updating labels...');
             this.updateParcelLabels();
         });
     }
 
     initMap() {
+        console.log('Initializing map...');
         this.map = L.map('map').setView([21.0999, 105.686332], 16);
+        console.log('2Initializing map...');
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 22,
             attribution: '© TDEMap'
@@ -41,22 +42,33 @@ class QuickEditMap {
     }
 
     async loadParcels() {
-        this.parcels = await fetch('/api/parcels').then(r => r.json());
+        console.log('Loading parcels from server...');
+        this.parcels = await fetch('/api/parcels').then(r => r.json());        
         this.renderParcels();
-        console.log('Loaded parcels:', this.parcels.length);
+        
     }
 
     renderParcels() {
         this.parcelsLayer.clearLayers();
+        console.log('222Rendering parcels on map...');
         this.parcels.forEach(parcel => {
+            let geo = null;
+            try{
+                geo = JSON.parse(parcel.geometry);
+            }
+            catch(e){
+                geo = '';
+                console.error('Invalid geometry for parcel id:', parcel.id);
+            }
             const feature = {
                 type: 'Feature',
                 properties: parcel,
-                geometry: JSON.parse(parcel.geometry)
+                geometry: geo
             };
             this.parcelsLayer.addData(feature);
         });
 
+        
         // Gán sự kiện click cho từng polygon
         this.parcelsLayer.eachLayer((layer) => {
             if (!layer.feature) return;
@@ -79,7 +91,7 @@ class QuickEditMap {
             this.parcelLabels.forEach(label => this.map.removeLayer(label));
         }
         this.parcelLabels = [];
-        console.log('Updating parcel labels...');
+
         if (!this.map || this.map.getZoom() < 19) return;
 
         const bounds = this.map.getBounds();
@@ -98,7 +110,7 @@ class QuickEditMap {
     }
 
     addParcelLabel(layer, parcel, idx, highlightRed = false) {
-        if (!this.map || this.map.getZoom() < 19) return;
+        if (!this.map || this.map.getZoom() < 18) return;
         if (!layer.getBounds || !parcel.parcel_code) return;
         const center = layer.getBounds().getCenter();
 
@@ -158,12 +170,12 @@ class QuickEditMap {
                 <label>Mã thửa:</label>
                 <input id="quick-edit-input" type="text" value="${parcel.parcel_code || ''}" />
                 <div style="margin-top:8px;">
-                    <button id="btn-full-edit">Sửa đầy đủ</button>
-                    <button id="btn-skip">Bỏ qua</button>
+                    
+                    <button id="btn-skip">Bỏ qua đi cho tôi tự chọn</button>
                 </div>
             </div>
         `;
-        labelOrLayer.bindPopup(popupContent, { closeOnClick: false, autoClose: false }).openPopup();
+        labelOrLayer.bindPopup(popupContent, { closeOnClick: true, autoClose: false }).openPopup();
 
         setTimeout(() => {
             const input = document.getElementById('quick-edit-input');
@@ -294,7 +306,6 @@ class QuickEditMap {
         }, 1800);
     }
 }
-
 document.addEventListener('DOMContentLoaded', async () => {
     const app = new QuickEditMap();
     await app.init();
