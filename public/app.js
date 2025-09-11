@@ -18,6 +18,7 @@ class TadtMap {
         this.initDrawingTools();
         this.bindEvents();
         this.loadParcels();
+        this.loadProjects();
     }
 
     // Khởi tạo bản đồ Leaflet
@@ -285,6 +286,7 @@ class TadtMap {
                 if (resPerm.ok) {
                     const perms = await resPerm.json();
                     allowedProjectIds = perms.filter(p => p.user_id == currentUser.id && p.can_view).map(p => p.project_id);
+                    console.log('Allowed projects for user:', allowedProjectIds);
                 }
             }
             // Lấy tất cả parcels
@@ -295,8 +297,10 @@ class TadtMap {
             let allParcels = await response.json();
             // Nếu có phân quyền, chỉ lấy các thửa thuộc dự án user được xem
             if (allowedProjectIds.length > 0) {
-                this.parcels = allParcels.filter(p => allowedProjectIds.includes(p.project_id));
+                console.log('All Parce for user:', allParcels);                
+                this.parcels = allParcels.filter(function(p) {return allowedProjectIds.includes(parseInt(p.project_id));} );
             }
+            console.log('Loaded parcels:', this.parcels.length, 'out of', allParcels.length);
             if (currentUser && currentUser.role == 'superadmin') {                
                 this.parcels = allParcels;
                 console.log(currentUser.role);
@@ -576,8 +580,9 @@ class TadtMap {
     createParcelPopup(parcel) {
         // Lấy tên dự án
         let projectName = 'Không có dự án';
+                
         if (this.projects && parcel.project_id) {
-            const project = this.projects.find(p => p.id == parcel.project_id);
+            const project = this.projects.find(p => p.id == parseInt(parcel.project_id));
             if (project) projectName = project.name;
         }
         return `
@@ -585,11 +590,10 @@ class TadtMap {
                 <h3>${parcel.title}</h3>
                 <p><strong>Mã thửa:</strong> ${parcel.parcel_code || ''}</p>
                 <p><strong>Dự án:</strong> ${projectName}</p>
-                <p><strong>Diện tích:</strong> ${parcel.area || 0} m²</p>
-                <p><strong>Mô tả:</strong> ${parcel.description || 'Chưa có'}</p>
+                <p><strong>Diện tích:</strong> ${parcel.area || 0} m²</p>                
                 <p><strong>Người phụ trách:</strong> ${parcel.person_in_charge || 'Chưa có'}</p>
-                <p><strong>Tình trạng pháp lý:</strong> ${parcel.legal_status}</p>
-                <p><strong>Tình trạng GPMB:</strong> ${parcel.clearance_status}</p>
+                <p><strong>Tiến độ:</strong> ${parcel.legal_status}</p>
+                <p><strong>Tình trạng thu mua:</strong> ${parcel.clearance_status}</p>
                 <div class="popup-actions">
                     <button class="btn btn-primary btn-sm" onclick="tadtMap.editParcel(${parcel.id})">Sửa</button>
                     <button class="btn btn-danger btn-sm" onclick="tadtMap.deleteParcel(${parcel.id})">Xóa</button>
@@ -601,20 +605,30 @@ class TadtMap {
     // Lấy style cho thửa đất
     getParcelStyle(feature) {
         const parcel = feature.properties;
+         
         
         // Sử dụng màu tùy chỉnh nếu có, nếu không thì dùng màu mặc định theo trạng thái
-        let fillColor = parcel.parcel_color || '#3388ff';
+        let fillColor ='#c9c9c9ff';
         
-        // Nếu không có màu tùy chỉnh, sử dụng màu theo trạng thái
-        if (!parcel.parcel_color) {
-            if (parcel.legal_status === 'Đã xong') {
+        // Nếu không có màu tùy chỉnh, sử dụng màu theo trạng thái Đã TT 100%  Đã hoàn thành ký HĐ Đang làm sang tên  Hoàn thành sang tên sổ
+        if (true) {
+            if (parcel.legal_status === 'Hoàn thành sang tên sổ') {
                 fillColor = '#51cf66'; // Xanh lá
-            } else if (parcel.legal_status === 'Đang xin') {
+            } else if (parcel.legal_status === 'Đã đặt cọc') {
                 fillColor = '#ffd43b'; // Vàng
-            } else {
-                fillColor = '#ff6b6b'; // Đỏ
+            } 
+             } else if (parcel.legal_status === 'Đã TT 100%') {
+                fillColor = '#f5a123ff'; // Vàng
             }
-        }
+            else if (parcel.legal_status === 'Đã hoàn thành ký HĐ') {
+                fillColor = '#f38dc5ff'; // Vàng
+            }            
+            else if (parcel.legal_status === 'Đã hoàn thành ký HĐ') {
+                fillColor = '#c9439cff'; // Vàng
+            } else {
+                fillColor = '#c9c9c9ff'; // Đỏ
+            }
+        
 
         return {
             fillColor: fillColor,
@@ -1041,7 +1055,7 @@ class TadtMap {
     // Import các feature từ GeoJSON
     async importGeoJSONFeatures(features, baseTitle, importProjectId) {
         let successCount = 0;
-        let errorCount = 0;
+        let errorCount = 0;   
 
         for (let i = 0; i < features.length; i++) {
             const feature = features[i];
@@ -1053,12 +1067,11 @@ class TadtMap {
                                 title: properties.title || `${baseTitle}-${i + 1}`,
                                 parcel_code: properties.parcel_code || `${baseTitle}-${i + 1}`,
                                 area: properties.area || this.calculateArea(feature.geometry),
-                                description: properties.description || `EntityHandle: ${properties.EntityHandle}` || '',
+                                description: properties.description || `imported`,
                                 person_in_charge: properties.person_in_charge || '',
-                                legal_status: properties.legal_status || '',
-                                clearance_status: properties.clearance_status || '',
+                                legal_status: properties.legal_status || 'Chưa đặt cọc',
+                                clearance_status: properties.clearance_status || 'Chưa thu mua',
                                 parcel_color: properties.parcel_color || '#dadadaff',
-                                attachment: '',
                                 geometry: JSON.stringify(feature.geometry),
                                 project_id: importProjectId || properties.project_id || null
                             };

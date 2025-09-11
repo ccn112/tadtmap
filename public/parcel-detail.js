@@ -70,7 +70,7 @@ function renderDetail(parcel) {
         html += `<tr><th style="width:220px;">${f.label}</th><td>${val}</td></tr>`;
     }
     html += '</table>';
-    html += '<div class="mt-3"><button class="btn btn-primary" id="editBtn"><i class="fas fa-edit"></i> Sửa</button></div>';
+    html += '<div class="mt-3"><button class="btn btn-primary" id="editBtn"><i class="fas fa-edit"></i> Sửa thửa này</button></div>';
     document.getElementById('parcelDetailBody').innerHTML = html;
     document.getElementById('editBtn').onclick = () => renderEditForm(parcel);
 }
@@ -184,7 +184,7 @@ function getIdFromUrl() {
     }
     try {
         const parcel = await fetchParcelDetail(id);
-        renderDetail(parcel);
+        renderEditForm(parcel);
     } catch (e) {
         document.getElementById('parcelDetailBody').innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
     }

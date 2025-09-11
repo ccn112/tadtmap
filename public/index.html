@@ -41,17 +41,20 @@
                         <select id="personInChargeFilter" class="filter-select">
                             <option value="">Tất cả người phụ trách</option>
                         </select>
-                        <select id="legalStatusFilter" class="filter-select">
-                            <option value="">Tất cả tình trạng pháp lý</option>
-                            <option value="Chưa có">Chưa có</option>
-                            <option value="Đang xin">Đang xin</option>
-                            <option value="Đã xong">Đã xong</option>
-                        </select>
                         <select id="clearanceStatusFilter" class="filter-select">
-                            <option value="">Tất cả tình trạng GPMB</option>
-                            <option value="Chưa GP">Chưa GP</option>
-                            <option value="Đang GP">Đang GP</option>
-                            <option value="Đã xong">Đã xong</option>
+                            <option value="">Tiến độ tổng thể</option>
+                            <option value="Chưa thu mua">Chưa thu mua</option>
+                            <option value="Đang thu mua">Đang thu mua</option>
+                            <option value="Hoàn thành sang tên">Hoàn thành sang tên</option>
+                        </select>
+                        <select id="legalStatusFilter" class="filter-select">
+                            <option value="">Tiến độ pháp lý</option>
+                            <option value="Chưa đặt cọc">Chưa đặt cọc</option>
+                            <option value="Đã đặt cọc">Đã đặt cọc</option>
+                            <option value="Đã TT 100%">Đã TT 100%</option>
+                            <option value="Đã hoàn thành ký HĐ">Đã hoàn thành ký HĐ</option>
+                            <option value="Đang làm sang tên">Đang làm sang tên</option>
+                            <option value="Hoàn thành sang tên sổ">Hoàn thành sang tên sổ</option>
                         </select>
                     </div>
                 </div>
@@ -113,35 +116,26 @@
                     </div>
                     <div class="form-group">
                         <label for="legalStatus">Tình trạng pháp lý</label>
-                        <select id="legalStatus" name="legalStatus">
-                            <option value="Chưa có">Chưa có</option>
-                            <option value="Đang xin">Đang xin</option>
-                            <option value="Đã xong">Đã xong</option>
+                         <select id="legalStatusFilter" class="filter-select">
+                            <option value="">Tiến độ pháp lý</option>
+                            <option value="Chưa đặt cọc">Chưa đặt cọc</option>
+                            <option value="Đã đặt cọc">Đã đặt cọc</option>
+                            <option value="Đã TT 100%">Đã TT 100%</option>
+                            <option value="Đã hoàn thành ký HĐ">Đã hoàn thành ký HĐ</option>
+                            <option value="Đang làm sang tên">Đang làm sang tên</option>
+                            <option value="Hoàn thành sang tên sổ">Hoàn thành sang tên sổ</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="clearanceStatus">Tình trạng GPMB</label>
-                        <select id="clearanceStatus" name="clearanceStatus">
-                            <option value="Chưa GP">Chưa GP</option>
-                            <option value="Đang GP">Đang GP</option>
-                            <option value="Đã xong">Đã xong</option>
+                        <label for="clearanceStatus">Tiến độ</label>
+                         <select id="clearanceStatusFilter" class="filter-select">
+                            <option value="">Tiến độ tổng thể</option>
+                            <option value="Chưa thu mua">Chưa thu mua</option>
+                            <option value="Đang thu mua">Đang thu mua</option>
+                            <option value="Hoàn thành sang tên">Hoàn thành sang tên</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="parcelColor">Màu sắc thửa đất</label>
-                        <div class="color-picker-container">
-                            <input type="color" id="parcelColor" name="parcelColor" value="#3388ff">
-                            <div class="color-preview" id="colorPreview"></div>
-                            <span class="color-value" id="colorValue">#3388ff</span>
-                        </div>
-                        <small>Chọn màu để hiển thị trên bản đồ</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="attachment">File đính kèm</label>
-                        <input type="file" id="attachment" name="attachment" multiple>
-                        <div id="currentAttachment" class="current-file"></div>
-                        <small>Chọn một hoặc nhiều file để đính kèm</small>
-                    </div>
+                   
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Lưu</button>
                         <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
