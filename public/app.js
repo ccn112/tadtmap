@@ -34,6 +34,10 @@ class TadtMap {
             }
             this.parcelLabels = [];
             // Vẽ lại label cho từng thửa đất
+             this.parcelsLayer = L.geoJSON(null, {
+                style: (feature) => this.getParcelStyle(feature),
+                onEachFeature: (feature, layer) => this.onEachParcelFeature(feature, layer)
+            }).addTo(this.map);
             const bounds = this.map.getBounds();
             this.parcelsLayer.eachLayer((layer) => {
                 // if (!layer.getBounds || !layer.feature) return;
@@ -611,23 +615,33 @@ class TadtMap {
         let fillColor ='#c9c9c9ff';
         
         // Nếu không có màu tùy chỉnh, sử dụng màu theo trạng thái Đã TT 100%  Đã hoàn thành ký HĐ Đang làm sang tên  Hoàn thành sang tên sổ
-        if (true) {
-            if (parcel.legal_status === 'Hoàn thành sang tên sổ') {
-                fillColor = '#51cf66'; // Xanh lá
-            } else if (parcel.legal_status === 'Đã đặt cọc') {
-                fillColor = '#ffd43b'; // Vàng
-            } 
-             } else if (parcel.legal_status === 'Đã TT 100%') {
-                fillColor = '#f5a123ff'; // Vàng
-            }
-            else if (parcel.legal_status === 'Đã hoàn thành ký HĐ') {
-                fillColor = '#f38dc5ff'; // Vàng
-            }            
-            else if (parcel.legal_status === 'Đã hoàn thành ký HĐ') {
-                fillColor = '#c9439cff'; // Vàng
-            } else {
-                fillColor = '#c9c9c9ff'; // Đỏ
-            }
+        console.log('Legal status:', parcel.legal_status);
+        switch (parcel.legal_status) {
+            case 'Hoàn thành sang tên sổ':fillColor = '#51cf66'; break; // Xanh lá
+            case 'Đã đặt cọc': fillColor = '#ffd43b'; break; // Vàng    
+            case 'Đã TT 100%': fillColor = '#f5a123ff'; break; // Cam      
+            case 'Đã hoàn thành ký HĐ': fillColor = '#f38dc5ff'; break; // Hồng
+            case 'Đang làm sang tên': fillColor = '#c9439cff'; break; // Tím
+            default: fillColor = '#c9c9c9ff'; break; // Xám
+        }
+        console.log('Fill color:', fillColor);
+        // if (true) {
+        //     if (parcel.legal_status === 'Hoàn thành sang tên sổ') {
+        //         fillColor = '#51cf66'; // Xanh lá
+        //     } else if (parcel.legal_status === 'Đã đặt cọc') {
+        //         fillColor = '#ffd43b'; // Vàng
+        //     } 
+        //      } else if (parcel.legal_status === 'Đã TT 100%') {
+        //         fillColor = '#f5a123ff'; // Vàng
+        //     }
+        //     else if (parcel.legal_status === 'Đã hoàn thành ký HĐ') {
+        //         fillColor = '#f38dc5ff'; // Vàng
+        //     }            
+        //     else if (parcel.legal_status === 'Đã hoàn thành ký HĐ') {
+        //         fillColor = '#c9439cff'; // Vàng
+        //     } else {
+        //         fillColor = '#c9c9c9ff'; // Đỏ
+        //     }
         
 
         return {
