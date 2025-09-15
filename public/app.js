@@ -591,17 +591,13 @@ class TadtMap {
         }
         return `
             <div class="popup-content">
-                <h3>${parcel.title}</h3>
                 <p><strong>Mã thửa:</strong> ${parcel.parcel_code || ''}</p>
                 <p><strong>Dự án:</strong> ${projectName}</p>
                 <p><strong>Diện tích:</strong> ${parcel.area || 0} m²</p>                
                 <p><strong>Người phụ trách:</strong> ${parcel.person_in_charge || 'Chưa có'}</p>
                 <p><strong>Tiến độ:</strong> ${parcel.legal_status}</p>
                 <p><strong>Tình trạng thu mua:</strong> ${parcel.clearance_status}</p>
-                <div class="popup-actions">
-                    <button class="btn btn-primary btn-sm" onclick="tadtMap.editParcel(${parcel.id})">Sửa</button>
-                    <button class="btn btn-danger btn-sm" onclick="tadtMap.deleteParcel(${parcel.id})">Xóa</button>
-                </div>
+                <p><strong>Mô tả:</strong> ${parcel.description || ''}</p>
             </div>
         `;
     }
