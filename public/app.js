@@ -34,10 +34,10 @@ class TadtMap {
             }
             this.parcelLabels = [];
             // Vẽ lại label cho từng thửa đất
-             this.parcelsLayer = L.geoJSON(null, {
-                style: (feature) => this.getParcelStyle(feature),
-                onEachFeature: (feature, layer) => this.onEachParcelFeature(feature, layer)
-            }).addTo(this.map);
+            //  this.parcelsLayer = L.geoJSON(null, {
+            //     style: (feature) => this.getParcelStyle(feature),
+            //     onEachFeature: (feature, layer) => this.onEachParcelFeature(feature, layer)
+            // }).addTo(this.map);
             const bounds = this.map.getBounds();
             this.parcelsLayer.eachLayer((layer) => {
                 // if (!layer.getBounds || !layer.feature) return;
